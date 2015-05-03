@@ -1,0 +1,22 @@
+project start	     :2014/08/06
+project end(due date):2015/08/06
+
+programming language:Common Lisp
+library:OpenGL, GLU, GLUT, zlib, libpng, OpenAL, ALUT
+stage:1 stages
+development environment:Emacs-24.4
+
+type:2D side-scrolling game(2d side-scroller) / 2D counterattack action
+
+hero:fox girl
+memo:She transform herself. ex:high school uniform to Yin and Yang uniform.
+     When she transform herself, put a leaf on head, and then make symbolic signs with her fingers.
+     Then white smoke belchs.
+
+stage-composition:1.comic-dialogue-event 2.journey 3.comic-dialogue-event 4.boss
+attack:z-key
+jump:↑-key
+
+resolution:(960 540)
+
+

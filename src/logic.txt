@@ -1,0 +1,14 @@
+The collide function detect collision detection of two image-object instance.
+
+collision detection list
+
+	  player and obstacle
+	  player and enemy
+
+a kind of detection
+
+       	  collision detection
+	  attack detection
+	  damage detection
+	  air detection
+	  ground detection

@@ -1,0 +1,19 @@
+{ "frames": {
+   "enemy1_standing1.ase": {
+    "frame": { "x": 0, "y": 0, "w": 64, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.0.6-dev",
+  "image": "enemy1_standing1.png",
+  "format": "I8",
+  "size": { "w": 64, "h": 64 },
+  "scale": "1"
+ }
+}
