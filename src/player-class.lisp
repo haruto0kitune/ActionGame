@@ -423,10 +423,19 @@
       player
     (cond ((string= sprite-name "standing-left")
 	   ;;standing-left
+	   ;;test
+;	   (sdl:draw-surface-at-* standing-left
+;				  position-x
+;				  position-y
+					;				  :cell standing-left-current-cell)
+	   
+	   ;;
 	   (sdl:draw-surface-at-* standing-left
 				  position-x
 				  position-y
 				  :cell standing-left-current-cell)
+;	   ((setf alpha) 128 standing-left)
+;	   (format t "~a~%" (sdl:alpha standing-left))
 	   (incf frame-counter)
 	   (when (> frame-counter (gethash "standing-left" duration))
 	     (incf standing-left-current-cell)

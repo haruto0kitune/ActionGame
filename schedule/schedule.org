@@ -29,11 +29,11 @@ project end(due date) :2015/08/06
    DEADLINE: <2015-02-01 Sun>
 *** TODO create the pixel-animation of the character.
 **** TODO create the pixel-animation of the fox girl.
-***** TODO create the standing animation.
+***** DONE create the standing animation.
       DEADLINE: <2015-01-18 Sun>
 ***** TODO create the walk animation.
       DEADLINE: <2015-01-19 Mon>
-***** TODO create the dash animation.
+***** DONE create the dash animation.
       DEADLINE: <2015-01-20 Tue>
 ***** TODO create the jump animation.
       DEADLINE: <2015-01-21 Wed>
@@ -41,10 +41,12 @@ project end(due date) :2015/08/06
       DEADLINE: <2015-01-22 Thu>
 ***** TODO create the counter attack motion.
       DEADLINE: <2015-01-23 Fri>
-***** TODO create the damage motion.
+***** DONE create the damage motion.
+      DEADLINE: <2015-01-24 Sat>
+***** DONE create the down motion.
       DEADLINE: <2015-01-24 Sat>
 **** TODO create the pixel-animation of the tanuki girl.
-***** TODO create the standing animation.
+***** DONE create the standing animation.
       DEADLINE: <2015-01-25 Sun>
 ***** TODO create the damage animation.
       DEADLINE: <2015-01-26 Mon>

@@ -93,13 +93,12 @@
 (setf (gethash "standing-right" *cell*) 11)
 (setf (gethash "running-left" *cell*) 7)
 (setf (gethash "running-right" *cell*) 7)
-(setf (gethash "jumping-left" *cell*) 9)
-(setf (gethash "jumping-right" *cell*) 9)
+(setf (gethash "jumping-left" *cell*) 3)
+(setf (gethash "jumping-right" *cell*) 3)
 (setf (gethash "piyo-standing-left" *cell*) 0)
 (setf (gethash "piyo-standing-right" *cell*) 0)
 (setf (gethash "piyo-walking-left" *cell*) 1)
 (setf (gethash "piyo-walking-right" *cell*) 1)
-
 
 ;; filename
 (defparameter *background* "../pixel_animation/background.png")
