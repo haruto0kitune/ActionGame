@@ -9,21 +9,21 @@ project end(due date) :2015/08/06
 *** ver0.1
 **** DONE ver0.01
 ***** DONE create the window.
-**** TODO ver0.02
+**** DONE ver0.02
      DEADLINE: <2015-02-02 Mon>
 ***** display the character.
 ***** display the background.
 **** TODO ver0.03
      DEADLINE: <2015-02-14 Sat>
-***** walk the character.
-***** dash the character.
-***** jump the character.
-***** implement the counter motion.
-***** implement the counter attack motion.
-***** implement the damage motion.
-**** TODO ver0.04
+***** TODO walk the character.
+***** DONE dash the character.
+***** DONE jump the character.
+***** TODO implement the counter motion.
+***** TODO implement the counter attack motion.
+***** TODO implement the damage motion.
+**** DONE ver0.04
      DEADLINE: <2015-02-28 Sat>
-***** implement the collision.
+***** DONE implement the collision.
 
 ** picture
    DEADLINE: <2015-02-01 Sun>
@@ -35,11 +35,11 @@ project end(due date) :2015/08/06
       DEADLINE: <2015-01-19 Mon>
 ***** DONE create the dash animation.
       DEADLINE: <2015-01-20 Tue>
-***** TODO create the jump animation.
+***** DONE create the jump animation.
       DEADLINE: <2015-01-21 Wed>
-***** TODO create the counter motion.
+***** DONE create the counter motion.
       DEADLINE: <2015-01-22 Thu>
-***** TODO create the counter attack motion.
+***** DONE create the counter attack motion.
       DEADLINE: <2015-01-23 Fri>
 ***** DONE create the damage motion.
       DEADLINE: <2015-01-24 Sat>

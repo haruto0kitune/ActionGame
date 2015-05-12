@@ -27,6 +27,10 @@
 (load "load-json" :external-format :utf-8)
 (load "piyo-class" :external-format :utf-8)
 
+;; gameover
+(defparameter *gameover-flag* nil)
+(defparameter *gameover* nil)
+
 ;; debug flag
 (defparameter *debug* t)
 
@@ -38,10 +42,15 @@
 (setf (gethash "running-right" *action-name*) "running-right")
 (setf (gethash "jumping-left" *action-name*) "jumping-left")
 (setf (gethash "jumping-right" *action-name*) "jumping-right")
+(setf (gethash "fox-girl-damage-motion1-left" *action-name*) "fox-girl-damage-motion1-left")
+(setf (gethash "fox-girl-damage-motion1-right" *action-name*) "fox-girl-damage-motion1-right")
+(setf (gethash "fox-girl-down-motion-left" *action-name*) "fox-girl-down-motion-left")
+(setf (gethash "fox-girl-down-motion-right" *action-name*) "fox-girl-down-motion-right")
 (setf (gethash "piyo-standing-left" *action-name*) "piyo-standing-left")
 (setf (gethash "piyo-standing-right" *action-name*) "piyo-standing-right")
 (setf (gethash "piyo-walking-left" *action-name*) "piyo-walking-left")
 (setf (gethash "piyo-walking-right" *action-name*) "piyo-walking-right")
+
 
 ;; hash table for filename
 (defparameter *filename* (make-hash-table :test #'equal))
@@ -61,6 +70,14 @@
       "../pixel_animation/player_jumping_left.png")
 (setf (gethash "jumping-right" *filename*)
       "../pixel_animation/player_jumping_right.png")
+(setf (gethash "fox-girl-damage-motion1-left" *filename*)
+      "../pixel_animation/fox_girl_damage_motion1_left.png")
+(setf (gethash "fox-girl-damage-motion1-right" *filename*)
+      "../pixel_animation/fox_girl_damage_motion1_right.png")
+(setf (gethash "fox-girl-down-motion-left" *filename*)
+      "../pixel_animation/fox_girl_down_motion_left2.png")
+(setf (gethash "fox-girl-down-motion-right" *filename*)
+      "../pixel_animation/fox_girl_down_motion_right2.png")
 ;;;; enemy
 ;;; piyo
 (setf (gethash "piyo-standing-left" *filename*)
@@ -80,6 +97,10 @@
 (setf (gethash "running-right" *duration*) 4)
 (setf (gethash "jumping-left" *duration*) 4)
 (setf (gethash "jumping-right" *duration*) 4)
+(setf (gethash "fox-girl-damage-motion1-left" *duration*) 4)
+(setf (gethash "fox-girl-damage-motion1-right" *duration*) 4)
+(setf (gethash "fox-girl-down-motion-left" *duration*) 4)
+(setf (gethash "fox-girl-down-motion-right" *duration*) 4)
 (setf (gethash "piyo-standing-left" *duration*) 1)
 (setf (gethash "piyo-standing-right" *duration*) 1)
 (setf (gethash "piyo-walking-left" *duration*) 3)
@@ -95,6 +116,10 @@
 (setf (gethash "running-right" *cell*) 7)
 (setf (gethash "jumping-left" *cell*) 3)
 (setf (gethash "jumping-right" *cell*) 3)
+(setf (gethash "fox-girl-damage-motion1-left" *cell*) 2)
+(setf (gethash "fox-girl-damage-motion1-right" *cell*) 2)
+(setf (gethash "fox-girl-down-motion-left" *cell*) 8)
+(setf (gethash "fox-girl-down-motion-right" *cell*) 8)
 (setf (gethash "piyo-standing-left" *cell*) 0)
 (setf (gethash "piyo-standing-right" *cell*) 0)
 (setf (gethash "piyo-walking-left" *cell*) 1)
@@ -211,7 +236,6 @@
 				       0
 				       *scroll-array-counter*))
 	    -40)
-;      (format t "a")
       (if (not (= (+ *scroll-array-counter* *the-number-of-row-block-in-window*) (- *block-row* 1)))
 	  (+= *scroll-array-counter* 1)))
     (format t "~a~%" *scroll-array-counter*)
@@ -251,11 +275,11 @@
 (defun generate-instance ()
   (setf *player* (make-instance 'player
 				:filename *filename*
-				:collision-x 243
+				:collision-x 643
 				:collision-y 15
 				:collision-width 39
 				:collision-height 113
-				:position-x 200
+				:position-x 600
 				:position-y 0
 				:velocity-x 10
 				:velocity-y 10
@@ -265,6 +289,7 @@
 				:y-cell-count 0
 				:total-cell-count *cell*
 				:duration *duration*
+				:direction "left"
 				:draw-flag t))
   (setf *piyo* (make-instance 'piyo
 			      :filename *filename*
@@ -272,6 +297,10 @@
 			      :collision-y 13
 			      :collision-width 40
 			      :collision-height 40
+			      :damage-collision-x 109
+			      :damage-collision-y 13
+			      :damage-collision-width 40
+			      :damage-collision-height 40
 			      :position-x 100			      
 			      :position-y 0
 			      :velocity-x 4			      
@@ -291,6 +320,10 @@
 			      :collision-y 13
 			      :collision-width 40
 			      :collision-height 40
+			      :damage-collision-x 209
+			      :damage-collision-y 13
+			      :damage-collision-width 40
+			      :damage-collision-height 40
 			      :position-x 200			      
 			      :position-y 0
 			      :velocity-x 4			      
@@ -345,6 +378,8 @@
   (setf (sdl:frame-rate) 60)
   (sdl:set-video-driver "directx")
   (sdl:init-video)
+  (setf *gameover* (sdl:load-image "../pixel_animation/gameover.png"
+				   :color-key sdl:*black*))
   (generate-instance))		    
 
 (defun key-event2 (player)
@@ -409,6 +444,33 @@
 (defun draw ()
   (draw-sprite *background*)
   (piyo-ai)
+  ;; damage piyo
+  (when (eq (damage-detect *piyo*) t)
+    (if (>= (image-object-hp *player*) 1) 
+      (-= (image-object-hp *player*) 1))
+    (cond ((string= (image-object-direction *player*) "left")
+	   (format t "l~%")
+	   (setf (image-object-action-name *player*) "fox-girl-damage-motion1-left"))
+	  ((string= (image-object-direction *player*) "right")
+	   (format t "r~%")
+	   (setf (image-object-action-name *player*) "fox-girl-damage-motion1-right"))))
+  ;; damage piyo2
+  (when (eq (damage-detect *piyo2*) t)
+    (if (>= (image-object-hp *player*) 1) 
+      (-= (image-object-hp *player*) 1))
+    (cond ((string= (image-object-direction *player*) "left")
+	   (format t "l~%")
+	   (setf (image-object-action-name *player*) "fox-girl-damage-motion1-left"))
+	  ((string= (image-object-direction *player*) "right")
+	   (format t "r~%")
+	   (setf (image-object-action-name *player*) "fox-girl-damage-motion1-right"))))
+  (when (<= (image-object-hp *player*) 0)
+    (cond ((string= (image-object-direction *player*) "left")
+	   (format t "l~%")
+	   (setf (image-object-action-name *player*) "fox-girl-down-motion-left"))
+	  ((string= (image-object-direction *player*) "right")
+	   (format t "r~%")
+	   (setf (image-object-action-name *player*) "fox-girl-down-motion-right"))))
   (draw-sprite-piyo *piyo*
 		    (image-object-action-name *piyo*))
   (draw-sprite-piyo *piyo2*
@@ -416,11 +478,16 @@
   (draw-sprite-player *player*
 		      (image-object-action-name *player*))
   (draw-stage-debug-mode2 *block-instance-array*)
-  (if (eq *debug* t) (draw-hitbox)))
+					;  (if (eq *debug* t) (draw-hitbox)))
+
+  (when (eq *debug* t)
+    (draw-hitbox)
+    (draw-damage-box)))
 
 (defun draw-hitbox ()
   (when (eq *debug* t)
-    (defvar color (sdl:color :r 255))
+    (let ((color (sdl:color :r 255)))
+;    (defvar color (sdl:color :r 255))
     ;; player
     (sdl:draw-rectangle-* (image-object-collision-x *player*)
 			  (image-object-collision-y *player*)
@@ -432,8 +499,34 @@
 			  (image-object-collision-y *piyo*)
 			  (image-object-collision-width *piyo*)
 			  (image-object-collision-height *piyo*)
-			  :color color)))
+			  :color color)
+    (sdl:draw-rectangle-* (image-object-collision-x *piyo2*)
+			  (image-object-collision-y *piyo2*)
+			  (image-object-collision-width *piyo2*)
+			  (image-object-collision-height *piyo2*)
+			  :color color))))
 
+(defun draw-damage-box ()
+  (when (eq *debug* t)
+    (let ((color (sdl:color :b 255)))
+    ;; player
+    (sdl:draw-rectangle-* (image-object-damage-collision-x *player*)
+			  (image-object-damage-collision-y *player*)
+			  (image-object-damage-collision-width *player*)
+			  (image-object-damage-collision-height *player*)
+			  :color color)
+    ;; piyo
+    (sdl:draw-rectangle-* (image-object-damage-collision-x *piyo*)
+			  (image-object-damage-collision-y *piyo*)
+			  (image-object-damage-collision-width *piyo*)
+			  (image-object-damage-collision-height *piyo*)
+			  :color color)
+    (sdl:draw-rectangle-* (image-object-damage-collision-x *piyo2*)
+			  (image-object-damage-collision-y *piyo2*)
+			  (image-object-damage-collision-width *piyo2*)
+			  (image-object-damage-collision-height *piyo2*)
+			  :color color))))
+  
 (defun block-collision ()
   (let ((bottom-collision-flag-counter-player 0)
 	(bottom-collision-flag-counter-piyo 0)
@@ -524,7 +617,37 @@
   (funcall *player-free-fall* *player* *g-flag*)
   (funcall *piyo-free-fall* *piyo* *piyo-g-flag*)
   (funcall *piyo2-free-fall* *piyo2* *piyo2-g-flag*))
-  
+
+(defun update-character ()
+  (update-player *player*)
+  (update-piyo *piyo*)
+  (update-piyo *piyo2*))
+
+(defun damage-detect (enemy)
+  (if (and (<= (image-object-damage-collision-x *player*)
+	       (+ (image-object-attack-collision-x enemy)
+		  (image-object-attack-collision-width enemy)))
+	   (<= (image-object-attack-collision-x enemy)
+	       (+ (image-object-damage-collision-x *player*)
+		  (image-object-damage-collision-width *player*)))
+	   (<= (image-object-damage-collision-y *player*)
+	       (+ (image-object-attack-collision-y enemy)
+		  (image-object-attack-collision-height enemy)))
+	   (<= (image-object-attack-collision-y enemy)
+	       (+ (image-object-damage-collision-y *player*)
+		  (image-object-damage-collision-height *player*))))
+    t
+    nil))  
+
+(defun gameover ()
+  (when (<= (image-object-hp *player*) 0)
+    (cond ((string= (image-object-direction *player*) "left")
+	   (setf (image-object-action-name *player*) "fox-girl-down-motion-left"))
+	  ((string= (image-object-direction *player*) "right")
+	   (setf (image-object-action-name *player*) "fox-girl-down-motion-right")))
+    (sdl:draw-surface-at-* *gameover* 0 0)))
+    
+
 (defun main ()
   (sdl:with-init ()
     (initialize)
@@ -546,11 +669,25 @@
       (:key-up-event (:key key)
 		     (update-key-state key nil *current-key-state*))
       (:idle ()
-	     (sdl:clear-display sdl:*black*)
-	     (key-event2 *player*)
-	     (check-jump-flag)
-	     (free-fall)
-	     (block-collision)
-	     (scroll)
-	     (draw)
-	     (sdl:update-display)))))
+	     (format t "hp:~a~%" (image-object-hp *player*))
+	     (if (<= (image-object-hp *player*) 0)
+	       (progn
+		 (sdl:clear-display sdl:*black*)	
+		 (check-jump-flag)
+		 (free-fall)
+		 (block-collision)
+		 (scroll)
+		 (update-character)
+		 (draw)
+		 (gameover)
+		 (sdl:update-display))
+	       (progn
+		 (sdl:clear-display sdl:*black*)
+		 (key-event2 *player*)
+		 (check-jump-flag)
+		 (free-fall)
+		 (block-collision)
+		 (scroll)
+		 (update-character)
+		 (draw)
+		 (sdl:update-display)))))))

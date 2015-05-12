@@ -22,6 +22,11 @@
 (defgeneric attack1 (piyo))
 
 
+;;;;
+;; collision-x = position-x + 9
+;; collision-y = position-y + 13
+;;;;  
+
 (defclass piyo ()
   ((hp
     :documentation "hit point"
@@ -53,6 +58,38 @@
     :accessor image-object-collision-height
     :initform 0
     :initarg :collision-height)
+   (attack-collision-x
+    :accessor image-object-attack-collision-x
+    :initform 0
+    :initarg :attack-collision-x)
+   (attack-collision-y
+    :accessor image-object-attack-collision-y
+    :initform 0
+    :initarg :attack-collision-y)
+   (attack-collision-width
+    :accessor image-object-attack-collision-width
+    :initform 0
+    :initarg :attack-collision-width)
+   (attack-collision-height
+    :accessor image-object-attack-collision-height
+    :initform 0
+    :initarg :attack-collision-height)
+   (damage-collision-x
+    :accessor image-object-damage-collision-x
+    :initform 0
+    :initarg :damage-collision-x)
+   (damage-collision-y
+    :accessor image-object-damage-collision-y
+    :initform 0
+    :initarg :damage-collision-y)
+   (damage-collision-width
+    :accessor image-object-damage-collision-width
+    :initform 0
+    :initarg :damage-collision-width)
+   (damage-collision-height
+    :accessor image-object-damage-collision-height
+    :initform 0
+    :initarg :damage-collision-height)
    (position-x
     :accessor image-object-position-x
     :initform 0
@@ -206,7 +243,20 @@
     :initarg :attack1-right)))
 
 (defmethod initialize-instance :after ((piyo piyo) &rest initargs)
-  (initialize-piyo piyo))
+  (with-slots (collision-x
+	       collision-y
+	       collision-width
+	       collision-height
+	       attack-collision-x
+	       attack-collision-y
+	       attack-collision-width
+	       attack-collision-height)
+      piyo
+    (setf attack-collision-x collision-x)
+    (setf attack-collision-y collision-y)
+    (setf attack-collision-width collision-width)
+    (setf attack-collision-height collision-height)
+    (initialize-piyo piyo)))
 
 (defmethod initialize-piyo ((piyo piyo))  
   (with-slots (position-x
@@ -221,26 +271,43 @@
     (setf var-jump (generate-jump piyo))
     (setf cx-minus-px (- collision-x position-x))
     (setf cy-minus-py (- collision-y position-y))))
-  
+
+(defmethod update-piyo ((piyo piyo))
+  (with-slots (collision-x
+	       collision-y
+	       attack-collision-x
+	       attack-collision-y
+	       damage-collision-x
+      	       damage-collision-y)
+      piyo
+    (setf attack-collision-x collision-x)
+    (setf attack-collision-y collision-y)
+    (setf damage-collision-x collision-x)
+    (setf damage-collision-y collision-y)))
+
 (defmethod move-left ((piyo piyo))
   (with-slots (position-x
 	       collision-x
+	       damage-collision-x
 	       velocity-x
 	       action-name)
       piyo
 ;    (setf action-name "piyo-walk-left")
     (-= position-x velocity-x)
-    (-= collision-x velocity-x)))
+    (-= collision-x velocity-x)
+    (-= damage-collision-x velocity-x)))
 
 (defmethod move-right ((piyo piyo))
   (with-slots (position-x
 	       collision-x
+	       damage-collision-x
 	       velocity-x
 	       action-name)
       piyo
  ;   (setf action-name "piyo-walk-right")
     (+= position-x velocity-x)
-    (+= collision-x velocity-x)))
+    (+= collision-x velocity-x)
+    (+= damage-collision-x velocity-x)))
 
 (defmethod generate-jump ((piyo piyo))
   (with-slots (jump-power jump-flag) piyo

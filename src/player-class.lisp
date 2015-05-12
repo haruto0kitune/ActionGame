@@ -55,6 +55,22 @@
     :accessor image-object-collision-height
     :initform 0
     :initarg :collision-height)
+   (damage-collision-x
+    :accessor image-object-damage-collision-x
+    :initform 0
+    :initarg :damage-collision-x)
+   (damage-collision-y
+    :accessor image-object-damage-collision-y
+    :initform 0
+    :initarg :damage-collision-y)
+   (damage-collision-width
+    :accessor image-object-damage-collision-width
+    :initform 0
+    :initarg :damage-collision-width)
+   (damage-collision-height
+    :accessor image-object-damage-collision-height
+    :initform 0
+    :initarg :damage-collision-height)
    (position-x
     :accessor image-object-position-x
     :initform 0
@@ -126,6 +142,22 @@
     :accessor image-object-jumping-right-current-cell
     :initform 0
     :initarg :jumping-right-current-cell)
+   (fox-girl-damage-motion1-left-current-cell
+    :accessor image-object-fox-girl-damage-motion1-left-current-cell
+    :initform 0
+    :initarg :fox-girl-damage-motion1-left-current-cell)
+   (fox-girl-damage-motion1-right-current-cell
+    :accessor image-object-fox-girl-damage-motion1-right-current-cell
+    :initform 0
+    :initarg :fox-girl-damage-motion1-right-current-cell)
+   (fox-girl-down-motion-left-current-cell
+    :accessor image-object-fox-girl-down-motion-left-current-cell
+    :initform 0
+    :initarg :fox-girl-down-motion-left-current-cell)
+   (fox-girl-down-motion-right-current-cell
+    :accessor image-object-fox-girl-down-motion-right-current-cell
+    :initform 0
+    :initarg :fox-girl-down-motion-right-current-cell)
    (duration
     :accessor image-object-duration
     :initform 0
@@ -143,7 +175,8 @@
    (direction
     :documentation "right or left"
     :accessor image-object-direction
-    :initform nil)
+    :initform nil
+    :initarg :direction)
    (jump-power
     :accessor image-object-jump-power
     :initform 20
@@ -239,10 +272,63 @@
     :documentation "sprite-sheet"
     :accessor image-object-atemi1-right
     :initform nil
-    :initarg :atemi1-right)))
+    :initarg :atemi1-right)
+   (fox-girl-damage-motion1-left
+    :documentation "sprite-sheet"
+    :accessor image-object-fox-girl-damage-motion1-left
+    :initform nil
+    :initarg :fox-girl-damage-motion1-left)
+   (fox-girl-damage-motion1-right
+    :documentation "sprite-sheet"
+    :accessor image-object-fox-girl-damage-motion1-right
+    :initform nil
+    :initarg :fox-girl-damage-motion1-right)
+   (fox-girl-down-motion-left
+    :documentation "sprite-sheet"
+    :accessor image-object-fox-girl-down-motion-left
+    :initform nil
+    :initarg :fox-girl-down-motion-left)
+   (fox-girl-down-motion-right
+    :documentation "sprite-sheet"
+    :accessor image-object-fox-girl-down-motion-right
+    :initform nil
+    :initarg :fox-girl-down-motion-right)))
+
+;(defmethod player-damage-detect ((player player) enemy)
+ ; (
+
+(defmethod update-player ((player player))
+  (with-slots (collision-x
+	       collision-y
+;	       attack-collision-x
+;	       attack-collision-y
+	       damage-collision-x
+      	       damage-collision-y)
+      player
+;    (setf attack-collision-x collision-x)
+ ;   (setf attack-collision-y collision-y)
+    (setf damage-collision-x collision-x)
+    (setf damage-collision-y collision-y)))
 
 (defmethod initialize-instance :after ((player player) &rest initargs)
-  (initialize-player player))
+  (with-slots (collision-x
+	       collision-y
+	       collision-width
+	       collision-height
+;	       attack-collision-x
+;	       attack-collision-y
+;	       attack-collision-width
+					;	       attack-collision-height)
+	       damage-collision-x
+	       damage-collision-y
+	       damage-collision-width
+	       damage-collision-height)
+      player
+    (setf damage-collision-x collision-x)
+    (setf damage-collision-y collision-y)
+    (setf damage-collision-width collision-width)
+    (setf damage-collision-height collision-height)
+    (initialize-player player)))
 
 (defmethod initialize-player ((player player))  
   (with-slots (position-x
@@ -265,16 +351,20 @@
 (defmethod move-left ((player player))
   (with-slots (position-x
 	       collision-x
-	       velocity-x)
+	       velocity-x
+	       direction)
       player
+    (setf (image-object-direction player) "left")
     (-= position-x velocity-x)
     (-= collision-x velocity-x)))
 
 (defmethod move-right ((player player))
   (with-slots (position-x
 	       collision-x
-	       velocity-x)
+	       velocity-x
+	       direction)
       player
+    (setf (image-object-direction player) "right")
     (+= position-x velocity-x)
     (+= collision-x velocity-x)))
 
@@ -322,6 +412,10 @@
 ;	       crouching-right
 ;	       atemi1-left
 ;	       atemi1-right
+	       fox-girl-damage-motion1-left
+	       fox-girl-damage-motion1-right
+	       fox-girl-down-motion-left
+	       fox-girl-down-motion-right
 	       )
       player
     (let ((sprite-cells nil))
@@ -384,7 +478,47 @@
 					       (gethash "jumping-right"
 							x-cell-count)) by width
 			 collect (list x y width height))))
-      (setf (sdl:cells jumping-right) sprite-cells))))      
+      (setf (sdl:cells jumping-right) sprite-cells)
+      ;; fox-girl-damage-motion1-left
+      (setf fox-girl-damage-motion1-left (sdl:load-image (gethash "fox-girl-damage-motion1-left" filename)
+					  :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "fox-girl-damage-motion1-left"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells fox-girl-damage-motion1-left) sprite-cells)
+      ;; fox-girl-damage-motion1-right
+      (setf fox-girl-damage-motion1-right (sdl:load-image (gethash "fox-girl-damage-motion1-right" filename)
+					   :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "fox-girl-damage-motion1-right"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells fox-girl-damage-motion1-right) sprite-cells)
+      ;; fox-girl-down-motion-left
+      (setf fox-girl-down-motion-left (sdl:load-image (gethash "fox-girl-down-motion-left" filename)
+					  :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "fox-girl-down-motion-left"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells fox-girl-down-motion-left) sprite-cells)
+      ;; fox-girl-down-motion-right
+      (setf fox-girl-down-motion-right (sdl:load-image (gethash "fox-girl-down-motion-right" filename)
+					   :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "fox-girl-down-motion-right"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells fox-girl-down-motion-right) sprite-cells))))
   
 (defmethod draw-sprite-player ((player player) sprite-name)
   (with-slots
@@ -401,6 +535,10 @@
 	 running-right
 	 jumping-left
 	 jumping-right
+	 fox-girl-damage-motion1-left
+	 fox-girl-damage-motion1-right
+	 fox-girl-down-motion-left
+	 fox-girl-down-motion-right
 					;	       crouching-left
 					;	       crouching-right
 					;	       atemi1-left
@@ -413,29 +551,26 @@
 	 running-right-current-cell
 	 jumping-left-current-cell
 	 jumping-right-current-cell
+	 fox-girl-damage-motion1-left-current-cell
+	 fox-girl-damage-motion1-right-current-cell
+	 fox-girl-down-motion-left-current-cell
+	 fox-girl-down-motion-right-current-cell
 					;	       crouching-left-current-cell
 					;	       crouching-right-current-cell
 					;	       atemi1-left-current-cell
 					;	       atemi1-right-current-cell
 	 current-cell
 	 duration
-	 frame-counter)
+	 frame-counter
+	 action-name
+	 hp)
       player
     (cond ((string= sprite-name "standing-left")
-	   ;;standing-left
-	   ;;test
-;	   (sdl:draw-surface-at-* standing-left
-;				  position-x
-;				  position-y
-					;				  :cell standing-left-current-cell)
-	   
-	   ;;
+	   ;;standing-left	   
 	   (sdl:draw-surface-at-* standing-left
 				  position-x
 				  position-y
 				  :cell standing-left-current-cell)
-;	   ((setf alpha) 128 standing-left)
-;	   (format t "~a~%" (sdl:alpha standing-left))
 	   (incf frame-counter)
 	   (when (> frame-counter (gethash "standing-left" duration))
 	     (incf standing-left-current-cell)
@@ -513,4 +648,66 @@
 	     (if (> jumping-right-current-cell (gethash "jumping-right"
 							total-cell-count))
 		 (setf jumping-right-current-cell (gethash "jumping-right"
-							total-cell-count))))))))
+							   total-cell-count)))))
+	  ((string= sprite-name "fox-girl-damage-motion1-left")
+	   ;;fox-girl-damage-motion1-left
+	   (when (and (<= hp 0)
+		      (> fox-girl-damage-motion1-left-current-cell
+			 (gethash "fox-girl-damage-motion1-left" total-cell-count)))
+	     (format t "down~%")
+	     (setf action-name "fox-girl-down-motion-left"))
+									  
+	   (sdl:draw-surface-at-* fox-girl-damage-motion1-left
+				  position-x
+				  position-y
+				  :cell fox-girl-damage-motion1-left-current-cell)
+	   (incf frame-counter)
+	   (when (> frame-counter (gethash "fox-girl-damage-motion1-left" duration))
+	     (incf fox-girl-damage-motion1-left-current-cell)
+	     (setf frame-counter 0)
+	     (if (> fox-girl-damage-motion1-left-current-cell (gethash "fox-girl-damage-motion1-left"
+							total-cell-count))
+		 (setf fox-girl-damage-motion1-left-current-cell 0))))
+	  ((string= sprite-name "fox-girl-damage-motion1-right")
+	   ;;fox-girl-damage-motion1-right
+	   (when (and (<= hp 0)
+		      (> fox-girl-damage-motion1-right-current-cell
+			 (gethash "fox-girl-damage-motion1-right" total-cell-count)))
+	     (format t "down~%")
+	     (setf action-name "fox-girl-down-motion-right"))
+	   (sdl:draw-surface-at-* fox-girl-damage-motion1-right
+				  position-x
+				  position-y
+				  :cell fox-girl-damage-motion1-right-current-cell)
+	   (incf frame-counter)
+	   (when (> frame-counter (gethash "fox-girl-damage-motion1-right" duration))
+	     (incf fox-girl-damage-motion1-right-current-cell)
+	     (setf frame-counter 0)
+	     (if (> fox-girl-damage-motion1-right-current-cell (gethash "fox-girl-damage-motion1-right"
+							total-cell-count))
+	       (setf fox-girl-damage-motion1-right-current-cell 0))))
+	  ((string= sprite-name "fox-girl-down-motion-left")
+	   ;;fox-girl-down-motion-left	   
+	   (sdl:draw-surface-at-* fox-girl-down-motion-left
+				  position-x
+				  position-y
+				  :cell fox-girl-down-motion-left-current-cell)
+	   (incf frame-counter)
+	   (when (> frame-counter (gethash "fox-girl-down-motion-left" duration))
+	     (setf frame-counter 0)
+	     (if (not (= fox-girl-down-motion-left-current-cell
+			 (gethash "fox-girl-down-motion-left" total-cell-count)))
+	       (incf fox-girl-down-motion-left-current-cell))))
+	  ((string= sprite-name "fox-girl-down-motion-right")
+	   ;;fox-girl-down-motion-right
+	   (sdl:draw-surface-at-* fox-girl-down-motion-right
+				  position-x
+				  position-y
+				  :cell fox-girl-down-motion-right-current-cell)
+	   (incf frame-counter)
+	   (when (> frame-counter (gethash "fox-girl-down-motion-right" duration))
+	     (setf frame-counter 0)
+	     (if (not (= fox-girl-down-motion-right-current-cell
+			 (gethash "fox-girl-down-motion-right" total-cell-count)))
+	       (incf fox-girl-down-motion-right-current-cell)))))))
+
