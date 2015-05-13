@@ -4,13 +4,6 @@
 
 (load "sprite-sheet-class.lisp" :external-format :utf-8)
 
-;;;; generate clojure
-(defgeneric generate-jump (player))
-
-;;;; sprite
-(defgeneric initialize-player (player))
-(defgeneric generate-player-sprite-sheet (player))
-
 (defclass player ()
   ((hp
     :documentation "hit point"

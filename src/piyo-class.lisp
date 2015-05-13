@@ -4,17 +4,10 @@
 
 (load "sprite-sheet-class.lisp" :external-format :utf-8)
 
-;;;; generate clojure
-(defgeneric generate-jump (piyo))
-
-;;;; sprite
-(defgeneric initialize-piyo (piyo))
-(defgeneric generate-piyo-sprite-sheet (piyo))
-
-;;;;
-;; collision-x = position-x + 9
-;; collision-y = position-y + 13
-;;;;  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; collision-x = position-x + 9  ;;
+;; collision-y = position-y + 13 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass piyo ()
   ((hp
