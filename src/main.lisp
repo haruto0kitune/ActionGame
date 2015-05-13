@@ -444,7 +444,6 @@
 		  (draw-sprite (aref instance-array y x)))))))
 
 (defun draw ()
-  (piyo-ai)
   ;; damage piyo
   (when (eq (damage-detect *piyo*) t)
     (if (>= (image-object-hp *player*) 1)
@@ -474,14 +473,10 @@
 	   (format t "r~%")
 	   (setf (image-object-action-name *player*) "fox-girl-down-motion-right"))))
   (draw-sprite *background*)
-  (draw-sprite-piyo *piyo*
-		    (image-object-action-name *piyo*))
-  (draw-sprite-piyo *piyo2*
-		      (image-object-action-name *piyo2*))
-  (draw-sprite-player *player*
-		      (image-object-action-name *player*))
+  (draw-sprite *piyo*)
+  (draw-sprite *piyo2*)
+  (draw-sprite *player*)
   (draw-stage-debug-mode2 *block-instance-array*)
-					;  (if (eq *debug* t) (draw-hitbox)))
 
   (when (eq *debug* t)
     (draw-hitbox)
@@ -681,6 +676,7 @@
 		 (block-collision)
 		 (scroll)
 		 (update-character)
+		 (piyo-ai)
 		 (draw)
 		 (gameover)
 		 (sdl:update-display))
@@ -692,5 +688,6 @@
 		 (block-collision)
 		 (scroll)
 		 (update-character)
+		 (piyo-ai)
 		 (draw)
 		 (sdl:update-display)))))))

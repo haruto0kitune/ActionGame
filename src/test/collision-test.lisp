@@ -1,4 +1,4 @@
-(load "collision.lisp" :external-format :utf-8)
+(load "../collision.lisp" :external-format :utf-8)
 
 (defun collision-of-rect-and-rect-test ()
   (format t "test1~%")

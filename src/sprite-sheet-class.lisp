@@ -27,7 +27,7 @@
 ;;;;
 
 (defgeneric generate-sprite-sheet (image-object))
-(defgeneric draw-sprite (image-object))
+;(defgeneric draw-sprite (image-object))
 
 (defclass image-object ()
   ((filename

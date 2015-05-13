@@ -1,6 +1,3 @@
-(defgeneric generate-sprite-sheet (blocks))
-(defgeneric draw-sprite (blocks))
-
 (defclass blocks ()
   ((filename
     :accessor image-object-filename
