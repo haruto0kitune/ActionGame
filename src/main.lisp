@@ -414,14 +414,16 @@
 	  (setf (image-object-action-name player) "jumping-right"))))
     (when (and (eq left t)
 	       (eq right nil))
-      (move-left player)
+					;      (move-left player)
+      (move *player* "left")
       (setf (image-object-direction player) "left")
       (if (eq (image-object-air-flag player) nil)
 	  (setf (image-object-action-name player) "running-left")
 	  (setf (image-object-action-name player) "jumping-left")))
     (when (and (eq right t)
 	       (eq left nil))
-      (move-right player)
+      (move *player* "right")
+;      (move-right player)
       (setf (image-object-direction player) "right")
       (if (eq (image-object-air-flag player) nil)
 	  (setf (image-object-action-name player) "running-right")
@@ -442,12 +444,12 @@
 		  (draw-sprite (aref instance-array y x)))))))
 
 (defun draw ()
-  (draw-sprite *background*)
   (piyo-ai)
   ;; damage piyo
   (when (eq (damage-detect *piyo*) t)
-    (if (>= (image-object-hp *player*) 1) 
-      (-= (image-object-hp *player*) 1))
+    (if (>= (image-object-hp *player*) 1)
+	(hp *player* -1))
+;      (-= (image-object-hp *player*) 1))
     (cond ((string= (image-object-direction *player*) "left")
 	   (format t "l~%")
 	   (setf (image-object-action-name *player*) "fox-girl-damage-motion1-left"))
@@ -471,6 +473,7 @@
 	  ((string= (image-object-direction *player*) "right")
 	   (format t "r~%")
 	   (setf (image-object-action-name *player*) "fox-girl-down-motion-right"))))
+  (draw-sprite *background*)
   (draw-sprite-piyo *piyo*
 		    (image-object-action-name *piyo*))
   (draw-sprite-piyo *piyo2*
@@ -599,13 +602,13 @@
     (setf (image-object-right-collision-flag *piyo2*) nil))
   
   (cond ((string= (image-object-direction *piyo*) "left")
-	 (move-left *piyo*))
+	 (move *piyo* "left"))
 	((string= (image-object-direction *piyo*) "right")
-	 (move-right *piyo*)))
+	 (move *piyo* "right")))
   (cond ((string= (image-object-direction *piyo2*) "left")
-	 (move-left *piyo2*))
+	 (move *piyo2* "left"))
 	((string= (image-object-direction *piyo2*) "right")
-	 (move-right *piyo2*))))
+	 (move *piyo2* "right"))))
 
 (defun check-jump-flag ()
   (if (eq (image-object-jump-flag *player*) t)		  
@@ -619,9 +622,9 @@
   (funcall *piyo2-free-fall* *piyo2* *piyo2-g-flag*))
 
 (defun update-character ()
-  (update-player *player*)
-  (update-piyo *piyo*)
-  (update-piyo *piyo2*))
+  (mapcar #'update `(,*player*
+		     ,*piyo*
+		     ,*piyo2*)))
 
 (defun damage-detect (enemy)
   (if (and (<= (image-object-damage-collision-x *player*)

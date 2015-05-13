@@ -13,6 +13,7 @@
 (defgeneric draw-sprite-player (player sprite-name))
 
 ;;;; moving volume
+(defgeneric move (player direction-string))
 (defgeneric move-left (player))
 (defgeneric move-right (player))
 
@@ -297,7 +298,7 @@
 ;(defmethod player-damage-detect ((player player) enemy)
  ; (
 
-(defmethod update-player ((player player))
+(defmethod update ((player player))
   (with-slots (collision-x
 	       collision-y
 ;	       attack-collision-x
@@ -347,7 +348,28 @@
 ;    (setf py-minus-cy (- position-y collision-y))))
 ;    (setf px-minus-cx collision-x)
  ;   (setf py-minus-cy collision-y)))
-  
+
+(defmethod hp ((player player) &optional (value nil))
+  (with-slots (hp) player
+    (if (eq value nil)
+	(return-from hp hp)
+	(return-from hp (+= hp value)))))
+
+(defmethod move ((player player) direction-string)
+  (with-slots (position-x
+	       collision-x
+	       velocity-x
+	       direction)
+      player    
+    (cond ((string= direction-string "left")
+	   (setf direction direction-string)
+	   (-= position-x velocity-x)
+	   (-= collision-x velocity-x))
+	  ((string= direction-string "right")
+	   (setf direction direction-string)
+	   (+= position-x velocity-x)
+	   (+= collision-x velocity-x)))))
+
 (defmethod move-left ((player player))
   (with-slots (position-x
 	       collision-x

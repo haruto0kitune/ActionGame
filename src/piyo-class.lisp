@@ -13,6 +13,7 @@
 (defgeneric draw-sprite-piyo (piyo sprite-name))
 
 ;;;; moving volume
+(defgeneric move (piyo direction-string))
 (defgeneric move-left (piyo))
 (defgeneric move-right (piyo))
 
@@ -272,7 +273,7 @@
     (setf cx-minus-px (- collision-x position-x))
     (setf cy-minus-py (- collision-y position-y))))
 
-(defmethod update-piyo ((piyo piyo))
+(defmethod update ((piyo piyo))
   (with-slots (collision-x
 	       collision-y
 	       attack-collision-x
@@ -285,6 +286,23 @@
     (setf damage-collision-x collision-x)
     (setf damage-collision-y collision-y)))
 
+(defmethod move ((piyo piyo) direction-string)
+  (with-slots (position-x
+	       collision-x
+	       damage-collision-x
+	       velocity-x)
+      piyo
+    (cond ((string= direction-string "left")
+	   (setf direction direction-string)
+	   (-= position-x velocity-x)
+	   (-= collision-x velocity-x)
+	   (-= damage-collision-x velocity-x))
+	  ((string= direction-string "right")
+	   (setf direction direction-string)
+	   (+= position-x velocity-x)
+	   (+= collision-x velocity-x)
+	   (+= damage-collision-x velocity-x)))))
+	   
 (defmethod move-left ((piyo piyo))
   (with-slots (position-x
 	       collision-x
