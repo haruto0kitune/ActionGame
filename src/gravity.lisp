@@ -1,3 +1,9 @@
+(in-package :cl-user)
+(defpackage gravity
+  (:use :cl)
+  (:export :generate-free-fall))
+(in-package :gravity)
+
 (defun generate-free-fall ()
   (let ((g 0) (temp-g 0))
     (lambda (image-object flag)

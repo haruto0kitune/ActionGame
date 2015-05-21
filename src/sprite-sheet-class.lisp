@@ -26,6 +26,12 @@
 ;;;; if don't generate-sprite-sheet, draw-sprite fail.
 ;;;;
 
+(in-package :cl-user)
+(defpackage sprite-sheet-class
+  (:use :cl)
+  (:export :image-object :draw-sprite))
+(in-package :sprite-sheet-class)
+
 (defgeneric generate-sprite-sheet (image-object))
 ;(defgeneric draw-sprite (image-object))
 

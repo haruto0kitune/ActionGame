@@ -1,3 +1,53 @@
+(in-package :cl-user)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (unless (find-package :game)    
+    (defpackage game
+      (:use :cl :key-state)
+      (:import-from :key-state
+		    :key-state
+		    :update-key-state
+		    :defkeystate)
+      (:import-from :load-csv
+		    :load-csv)
+      (:import-from :sprite-sheet-class)
+      (:import-from :player-class
+		    :player
+		    :update
+		    :draw-sprite
+		    :move
+		    :jump
+		    :hp)  
+      (:import-from :block-class
+		    :blocks
+		    :draw-sprite)
+      (:import-from :collision
+		    :collide
+		    :bottom-collide)
+      (:import-from :gravity
+		    :generate-free-fall)
+      (:import-from :load-json
+		    :load-json)
+      (:import-from :piyo-class
+		    :piyo
+		    :initialize-piyo
+		    :update
+		    :move
+		    :draw-sprite)
+      (:export :main))))
+(in-package :game)
+
+(defkeystate key-state
+  (right :sdl-key-right)
+  (left :sdl-key-left)
+  (up :sdl-key-up)
+  (x :sdl-key-x))
+
+(defmacro -= (n1 n2)
+  `(setf ,n1 (- ,n1 ,n2)))
+
+(defmacro += (n1 n2)
+  `(setf ,n1 (+ ,n1 ,n2)))
+
 ;;;; debug
 (declaim (optimize (debug 3) (safety 3)
                    (speed 0) (space 0) (compilation-speed 0)))
@@ -16,16 +66,6 @@
 ;;;;
 ;;;; implement the enemy.
 ;;;;
-
-(load "key-state.lisp" :external-format :utf-8)
-(load "load-csv.lisp" :external-format :utf-8)
-(load "sprite-sheet-class.lisp" :external-format :utf-8)
-(load "player-class.lisp" :external-format :utf-8)
-(load "block-class.lisp" :external-format :utf-8)
-(load "collision.lisp" :external-format :utf-8)
-(load "gravity.lisp" :external-format :utf-8)
-(load "load-json" :external-format :utf-8)
-(load "piyo-class" :external-format :utf-8)
 
 ;; gameover
 (defparameter *gameover-flag* nil)
@@ -382,52 +422,24 @@
 				   :color-key sdl:*black*))
   (generate-instance))		    
 
-(defun key-event2 (player)
-  (with-slots (right left up) *current-key-state*
-;    (format t "up:~a~%" up)
-;    (format t "right:~a~%" right)
-;    (format t "left:~a~%" left)
-    (when (and (eq up nil)
-	       (eq left nil)
-	       (eq right nil)
-	       (eq (image-object-ground-flag player) t)
-	       (string= (image-object-direction player) "left"))
-      (setf (image-object-action-name player) "standing-left"))
-    (when (and (eq up nil)
-	       (eq left nil)
-	       (eq right nil)
-	       (eq (image-object-ground-flag player) t)
-	       (string= (image-object-direction player) "right"))
-      (setf (image-object-action-name player) "standing-right"))
-    (when (and (eq up t)
-	       (eq left t))
-      (when (eq (image-object-ground-flag player) t)
-	(setf (image-object-jump-flag player) t)
-	(when (string= (image-object-direction player) "left")
-	  (setf (image-object-action-name player) "jumping-left"))))
-    (when (eq up t)
-      (when (eq (image-object-ground-flag player) t)
-	(setf (image-object-jump-flag player) t)
-	(when (string= (image-object-direction player) "left")
-	  (setf (image-object-action-name player) "jumping-left"))
-	(when (string= (image-object-direction player) "right")
-	  (setf (image-object-action-name player) "jumping-right"))))
-    (when (and (eq left t)
-	       (eq right nil))
-					;      (move-left player)
-      (move *player* "left")
-      (setf (image-object-direction player) "left")
-      (if (eq (image-object-air-flag player) nil)
-	  (setf (image-object-action-name player) "running-left")
-	  (setf (image-object-action-name player) "jumping-left")))
-    (when (and (eq right t)
-	       (eq left nil))
-      (move *player* "right")
-;      (move-right player)
-      (setf (image-object-direction player) "right")
-      (if (eq (image-object-air-flag player) nil)
-	  (setf (image-object-action-name player) "running-right")
-	  (setf (image-object-action-name player) "jumping-right")))))
+(defun key-event2 (player current-key-state)
+  (with-slots (right left up) current-key-state
+    (with-slots (ground-flag direction action-name) player
+      (when (and (eq up nil)
+		 (eq left nil)
+		 (eq right nil)
+		 (eq ground-flag t)
+		 (string= direction "left"))
+	(setf action-name "standing-left"))
+      (when (and (eq up nil)
+		 (eq left nil)
+		 (eq right nil)
+		 (eq ground-flag t)
+		 (string= direction "right"))
+	(setf action-name "standing-right"))
+      (if (eq up t) (jump player))
+      (if (eq left t) (move player "left"))
+      (if (eq right t) (move player "right")))))
 
 (defun draw-stage-debug-mode2 (instance-array)
   (setf *block-array* (load-csv "map2.csv"))
@@ -682,7 +694,7 @@
 		 (sdl:update-display))
 	       (progn
 		 (sdl:clear-display sdl:*black*)
-		 (key-event2 *player*)
+		 (key-event2 *player* *current-key-state*)
 		 (check-jump-flag)
 		 (free-fall)
 		 (block-collision)

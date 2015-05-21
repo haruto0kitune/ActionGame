@@ -1,3 +1,9 @@
+(in-package :cl-user)
+(defpackage load-csv
+  (:use :cl)
+  (:export :load-csv))
+(in-package :load-csv)
+
 (defun load-csv (filename)
   "input csv filename, return array"
   (list-to-2d-array (string-to-number (load-csv-file filename))))

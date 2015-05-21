@@ -1,301 +1,31 @@
-;;;;
-;;;; player class
-;;;;
-
 (in-package :cl-user)
-(defpackage player-class
+(defpackage generic-function
   (:use :cl)
-  (:import-from :sprite-sheet-class)
-  (:export :player :update :draw-sprite :move :jump :hp))
-(in-package :player-class)
+  (:import-from :sprite-sheet-class
+		:image-object)
+  (:import-from :player-class
+		:player)
+  (:import-from :piyo-class
+		:piyo)
+  (:import-from :key-state
+		:key-state
+		:defkeystate)
+  (:import-from :block-class
+		:blocks))
+(in-package :generic-function)
 
-;(load "sprite-sheet-class.lisp" :external-format :utf-8)
+;;;; initialize-instance
 
-(defclass player ()
-  ((hp
-    :documentation "hit point"
-    :accessor image-object-hp
-    :initform 1
-    :initarg :hp)
-   (frames
-    :accessor image-object-frames
-    :initform nil
-    :initarg :frames)
-   (filename
-    :documentation "hash table"
-    :accessor image-object-filename
-    :initform nil
-    :initarg :filename)
-   (collision-x
-    :accessor image-object-collision-x
-    :initform 0
-    :initarg :collision-x)
-   (collision-y
-    :accessor image-object-collision-y
-    :initform 0
-    :initarg :collision-y)
-   (collision-width
-    :accessor image-object-collision-width
-    :initform 0
-    :initarg :collision-width)
-   (collision-height
-    :accessor image-object-collision-height
-    :initform 0
-    :initarg :collision-height)
-   (damage-collision-x
-    :accessor image-object-damage-collision-x
-    :initform 0
-    :initarg :damage-collision-x)
-   (damage-collision-y
-    :accessor image-object-damage-collision-y
-    :initform 0
-    :initarg :damage-collision-y)
-   (damage-collision-width
-    :accessor image-object-damage-collision-width
-    :initform 0
-    :initarg :damage-collision-width)
-   (damage-collision-height
-    :accessor image-object-damage-collision-height
-    :initform 0
-    :initarg :damage-collision-height)
-   (position-x
-    :accessor image-object-position-x
-    :initform 0
-    :initarg :position-x)
-   (position-y
-    :accessor image-object-position-y
-    :initform 0
-    :initarg :position-y)
-   (velocity-x
-    :accessor image-object-velocity-x
-    :initform 0
-    :initarg :velocity-x)
-   (velocity-y
-    :accessor image-object-velocity-y
-    :initform 0
-    :initarg :velocity-y)
-   (width
-    :accessor image-object-width
-    :initform 0
-    :initarg :width)
-   (height
-    :accessor image-object-height
-    :initform 0
-    :initarg :height)
-   (x-cell-count
-    :documentation "take 1 from actual number"
-    :accessor image-object-x-cell-count
-    :initform 0
-    :initarg :x-cell-count)
-   (y-cell-count
-    :documentation "take 1 from actual number"
-    :accessor image-object-y-cell-count
-    :initform 0
-    :initarg :y-cell-count)
-   (total-cell-count
-    :documentation "take 1 from actual number"
-    :accessor image-object-total-cell-count
-    :initform 0
-    :initarg :total-cell-count)
-   (sprite-sheet
-    :accessor image-object-sprite-sheet
-    :initform nil
-    :initarg :sprite-sheet)
-   (current-cell
-    :accessor image-object-current-cell
-    :initform 0
-    :initarg :current-cell)
-   (standing-left-current-cell
-    :accessor image-object-standing-left-current-cell
-    :initform 0
-    :initarg :standing-left-current-cell)
-   (standing-right-current-cell
-    :accessor image-object-standing-right-current-cell
-    :initform 0
-    :initarg :standing-right-current-cell)
-   (running-left-current-cell
-    :accessor image-object-running-left-current-cell
-    :initform 0
-    :initarg :running-left-current-cell)
-   (running-right-current-cell
-    :accessor image-object-running-right-current-cell
-    :initform 0
-    :initarg :running-right-current-cell)
-   (jumping-left-current-cell
-    :accessor image-object-jumping-left-current-cell
-    :initform 0
-    :initarg :jumping-left-current-cell)
-   (jumping-right-current-cell
-    :accessor image-object-jumping-right-current-cell
-    :initform 0
-    :initarg :jumping-right-current-cell)
-   (fox-girl-damage-motion1-left-current-cell
-    :accessor image-object-fox-girl-damage-motion1-left-current-cell
-    :initform 0
-    :initarg :fox-girl-damage-motion1-left-current-cell)
-   (fox-girl-damage-motion1-right-current-cell
-    :accessor image-object-fox-girl-damage-motion1-right-current-cell
-    :initform 0
-    :initarg :fox-girl-damage-motion1-right-current-cell)
-   (fox-girl-down-motion-left-current-cell
-    :accessor image-object-fox-girl-down-motion-left-current-cell
-    :initform 0
-    :initarg :fox-girl-down-motion-left-current-cell)
-   (fox-girl-down-motion-right-current-cell
-    :accessor image-object-fox-girl-down-motion-right-current-cell
-    :initform 0
-    :initarg :fox-girl-down-motion-right-current-cell)
-   (duration
-    :accessor image-object-duration
-    :initform 0
-    :initarg :duration)
-   (frame-counter
-    :initform 0)
-   (cx-minus-px
-    :documentation "position-x minus collision-x"
-    :accessor image-object-cx-minus-px
-    :initform 0)
-   (cy-minus-py
-    :documentation "position-y minus collision-y"
-    :accessor image-object-cy-minus-py
-    :initform 0)
-   (direction
-    :documentation "right or left"
-    :accessor image-object-direction
-    :initform nil
-    :initarg :direction)
-   (jump-power
-    :accessor image-object-jump-power
-    :initform 20
-    :initarg :jump-power)
-   (action-name
-    :documentation "action flag"
-    :accessor image-object-action-name
-    :initform "standing-left")
-   (var-jump
-    :accessor image-object-var-jump
-    :initform nil)
-   (draw-flag
-    :accessor image-object-draw-flag
-    :initform nil
-    :initarg :draw-flag)
-   (jump-flag
-    :accessor image-object-jump-flag
-    :initform nil)
-   (ground-flag
-    :accessor image-object-ground-flag
-    :initform nil)
-   (air-flag
-    :accessor image-object-air-flag
-    :initform nil)
-   (top-collision-flag
-    :accessor image-object-top-collision-flag
-    :initform nil)
-   (bottom-collision-flag
-    :accessor image-object-bottom-collision-flag
-    :initform nil)
-   (left-collision-flag
-    :accessor image-object-left-collision-flag
-    :initform nil)
-   (right-collision-flag
-    :accessor image-object-right-collision-flag
-    :initform nil)
-   (standing-left
-    :documentation "sprite-sheet"
-    :accessor image-object-standing-left
-    :initform nil
-    :initarg :standing-left)
-   (standing-right
-    :documentation "sprite-sheet"
-    :accessor image-object-standing-right
-    :initform nil
-    :initarg :standing-right)
-   (walking-left
-    :documentation "sprite-sheet"
-    :accessor image-object-walking-left
-    :initform nil
-    :initarg :walking-left)
-   (walking-right
-    :documentation "sprite-sheet"
-    :accessor image-object-walking-right
-    :initform nil
-    :initarg :walking-right)
-   (running-left
-    :documentation "sprite-sheet"
-    :accessor image-object-running-left
-    :initform nil
-    :initarg :running-left)
-   (running-right
-    :documentation "sprite-sheet"
-    :accessor image-object-running-right
-    :initform nil
-    :initarg :running-right)
-   (jumping-left
-    :documentation "sprite-sheet"
-    :accessor image-object-jumping-left
-    :initform nil
-    :initarg :jumping-left)
-   (jumping-right
-    :documentation "sprite-sheet"
-    :accessor image-object-jumping-right
-    :initform nil
-    :initarg :jumping-right)
-   (crouching-left
-    :documentation "sprite-sheet"
-    :accessor image-object-crouching-left
-    :initform nil
-    :initarg :crouching-left)
-   (crouching-right
-    :documentation "sprite-sheet"
-    :accessor image-object-crouching-right
-    :initform nil
-    :initarg :crouching-right)
-   (atemi1-left
-    :documentation "sprite-sheet"
-    :accessor image-object-atemi1-left
-    :initform nil
-    :initarg :atemi1-left)
-   (atemi1-right
-    :documentation "sprite-sheet"
-    :accessor image-object-atemi1-right
-    :initform nil
-    :initarg :atemi1-right)
-   (fox-girl-damage-motion1-left
-    :documentation "sprite-sheet"
-    :accessor image-object-fox-girl-damage-motion1-left
-    :initform nil
-    :initarg :fox-girl-damage-motion1-left)
-   (fox-girl-damage-motion1-right
-    :documentation "sprite-sheet"
-    :accessor image-object-fox-girl-damage-motion1-right
-    :initform nil
-    :initarg :fox-girl-damage-motion1-right)
-   (fox-girl-down-motion-left
-    :documentation "sprite-sheet"
-    :accessor image-object-fox-girl-down-motion-left
-    :initform nil
-    :initarg :fox-girl-down-motion-left)
-   (fox-girl-down-motion-right
-    :documentation "sprite-sheet"
-    :accessor image-object-fox-girl-down-motion-right
-    :initform nil
-    :initarg :fox-girl-down-motion-right)))
-
-(defmethod update ((player player))
-  (with-slots (collision-x
-	       collision-y
-;	       attack-collision-x
-;	       attack-collision-y
-	       damage-collision-x
-      	       damage-collision-y)
-      player
-;   (setf attack-collision-x collision-x)
-;   (setf attack-collision-y collision-y)
-    (setf damage-collision-x collision-x)
-    (setf damage-collision-y collision-y)))
+(defmethod initialize-instance :after ((image-object image-object) &rest initargs)
+  (generate-sprite-sheet image-object))
 
 (defmethod initialize-instance :after ((player player) &rest initargs)
-  (with-slots (collision-x
+  (with-slots (position-x
+	       position-y
+	       cx-minus-px
+	       cy-minus-py
+	       var-jump
+	       collision-x
 	       collision-y
 	       collision-width
 	       collision-height
@@ -312,21 +42,188 @@
     (setf damage-collision-y collision-y)
     (setf damage-collision-width collision-width)
     (setf damage-collision-height collision-height)
-    (initialize-player player)))
-
-(defmethod initialize-player ((player player))  
-  (with-slots (position-x
-	       position-y
-	       collision-x
-	       collision-y
-	       cx-minus-px
-	       cy-minus-py
-	       var-jump)
-      player
     (generate-sprite-sheet player)
     (setf var-jump (generate-jump player))
     (setf cx-minus-px (- collision-x position-x))
     (setf cy-minus-py (- collision-y position-y))))
+
+(defmethod initialize-instance :after ((piyo piyo) &rest initargs)
+  (with-slots (position-x
+	       position-y
+	       cx-minus-px
+	       cy-minus-py
+	       var-jump
+	       collision-x
+	       collision-y
+	       collision-width
+	       collision-height
+	       attack-collision-x
+	       attack-collision-y
+	       attack-collision-width
+	       attack-collision-height)
+      piyo
+    (setf attack-collision-x collision-x)
+    (setf attack-collision-y collision-y)
+    (setf attack-collision-width collision-width)
+    (setf attack-collision-height collision-height)
+    (generate-sprite-sheet piyo)
+    (setf var-jump (generate-jump piyo))
+    (setf cx-minus-px (- collision-x position-x))
+    (setf cy-minus-py (- collision-y position-y))))
+
+(defmethod initialize-instance :after ((blocks blocks) &rest initargs)
+  (generate-sprite-sheet blocks))
+
+;;;; generate-sprite-sheet
+
+(defmethod generate-sprite-sheet ((image-object image-object))
+  (with-slots (filename width height x-cell-count y-cell-count sprite-sheet)
+      image-object
+    (let ((sprite-cells nil))
+      (setf sprite-sheet (sdl:load-image filename :color-key sdl:*black*))      
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+		 append (loop for x from 0 to (* width x-cell-count) by width
+			   collect (list x y width height))))
+      (setf (sdl:cells sprite-sheet) sprite-cells))))
+
+(defmethod generate-sprite-sheet ((player player))
+  (set-standing-left player)
+  (set-standing-right player)
+  (set-running-left player)
+  (set-running-right player)
+  (set-jumping-left player)
+  (set-jumping-right player)
+  (set-fox-girl-damage-motion1-left player)
+  (set-fox-girl-damage-motion1-right player)
+  (set-fox-girl-down-motion-left player)
+  (set-fox-girl-down-motion-right player))
+
+(defmethod generate-sprite-sheet ((piyo piyo))
+  (set-standing-left piyo)
+  (set-standing-right piyo)
+  (set-walking-left piyo)
+  (set-walking-right piyo))
+
+(defmethod generate-sprite-sheet ((blocks blocks))
+  (with-slots (filename width height x-cell-count y-cell-count sprite-sheet)
+      blocks
+    (let ((sprite-cells nil))
+      (setf sprite-sheet (sdl:load-image filename :color-key sdl:*black*))      
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+		 append (loop for x from 0 to (* width x-cell-count) by width
+			   collect (list x y width height))))
+      (setf (sdl:cells sprite-sheet) sprite-cells))))
+
+;;;; draw-sprite
+
+(defmethod draw-sprite ((image-object image-object))
+  (with-slots
+	(position-x
+	 position-y
+	 total-cell-count
+	 sprite-sheet
+	 current-cell
+	 duration
+	 frame-counter)
+      image-object
+    (sdl:draw-surface-at-* sprite-sheet position-x position-y :cell current-cell)
+    (incf frame-counter)
+    (when (> frame-counter duration)
+      (incf current-cell)
+      (setf frame-counter 0)
+      (if (> current-cell total-cell-count)
+	  (setf current-cell 0)))))
+
+(defmethod draw-sprite ((player player))
+  (with-slots (action-name) player
+    (cond ((string= action-name "standing-left") (standing-left player))
+	  ((string= action-name "standing-right") (standing-right player))
+	  ((string= action-name "running-left") (running-left player))
+	  ((string= action-name "running-right") (running-right player))
+	  ((string= action-name "jumping-left") (jumping-left player))
+	  ((string= action-name "jumping-right") (jumping-right player))
+	  ((string= action-name "fox-girl-damage-motion1-left") (fox-girl-damage-motion1-left player))
+	  ((string= action-name "fox-girl-damage-motion1-right") (fox-girl-damage-motion1-right player))
+	  ((string= action-name "fox-girl-down-motion-left") (fox-girl-down-motion-left player))
+	  ((string= action-name "fox-girl-down-motion-right") (fox-girl-down-motion-right player)))))
+  
+(defmethod draw-sprite ((piyo piyo))
+  (with-slots (action-name) piyo
+    (cond ((string= action-name "piyo-standing-left") (piyo-standing-left piyo))
+	  ((string= action-name "piyo-standing-right") (piyo-standing-right piyo))
+	  ((string= action-name "piyo-walking-left") (piyo-walking-left piyo))
+	  ((string= action-name "piyo-walking-right") (piyo-walking-right piyo)))))
+
+(defmethod draw-sprite ((blocks blocks))
+  (with-slots
+	(position-x
+	 position-y
+	 total-cell-count
+	 sprite-sheet
+	 current-cell
+	 duration
+	 frame-counter
+	 draw-flag
+	 id)
+      blocks
+    (cond ((= id 0)
+	   (sdl:draw-surface-at-* sprite-sheet
+				  position-x
+				  position-y
+				  :cell id))
+	  ((= id 1)
+	   (sdl:draw-surface-at-* sprite-sheet
+				  position-x
+				  position-y
+				  :cell id)))
+    (incf frame-counter)
+    (when (> frame-counter duration)
+      (incf current-cell)
+      (setf frame-counter 0)
+      (if (> current-cell total-cell-count)
+	  (setf current-cell 0)))))
+
+;;;; update
+
+(defmethod update ((player player))
+  (with-slots (collision-x
+	       collision-y
+;	       attack-collision-x
+;	       attack-collision-y
+	       damage-collision-x
+      	       damage-collision-y)
+      player
+;   (setf attack-collision-x collision-x)
+;   (setf attack-collision-y collision-y)
+    (setf damage-collision-x collision-x)
+    (setf damage-collision-y collision-y)))
+
+(defmethod update ((piyo piyo))
+  (with-slots (collision-x
+	       collision-y
+	       attack-collision-x
+	       attack-collision-y
+	       damage-collision-x
+      	       damage-collision-y)
+      piyo
+    (setf attack-collision-x collision-x)
+    (setf attack-collision-y collision-y)
+    (setf damage-collision-x collision-x)
+    (setf damage-collision-y collision-y)))
+
+;;;; move
+
+(defmethod move ((player player) direction-string)
+  (cond ((string= direction-string "left") (move-left player))
+	((string= direction-string "right") (move-right player))))
+
+(defmethod move ((piyo piyo) direction-string)
+  (cond ((string= direction-string "left") (move-left piyo))
+	((string= direction-string "right") (move-right piyo))))
+
+;;;; hp
 
 (defmethod hp ((player player) &optional (value nil))
   (with-slots (hp) player
@@ -334,11 +231,13 @@
 	(return-from hp hp)
 	(return-from hp (+= hp value)))))
 
-(defmethod move ((player player) direction-string)
-  (cond ((string= direction-string "left")
-	 (move-left player))
-	((string= direction-string "right")
-	 (move-right player))))
+(defmethod hp ((piyo piyo) &optional (value nil))
+  (with-slots (hp) piyo
+    (if (eq value nil)
+	(return-from hp hp)
+	(return-from hp (+= hp value)))))
+
+;;;; move-left
 
 (defmethod move-left ((player player))
   (with-slots (position-x
@@ -355,6 +254,20 @@
 	(setf action-name "running-left")
 	(setf action-name "jumping-left"))))
 
+(defmethod move-left ((piyo piyo))
+  (with-slots (position-x
+	       collision-x
+	       damage-collision-x
+	       velocity-x
+	       direction)
+      piyo
+    (setf direction "left")
+    (-= position-x velocity-x)
+    (-= collision-x velocity-x)
+    (-= damage-collision-x velocity-x)))
+
+;;;; move-right
+
 (defmethod move-right ((player player))
   (with-slots (position-x
 	       collision-x
@@ -369,7 +282,21 @@
     (if (eq air-flag nil)
 	(setf action-name "running-right")
 	(setf action-name "jumping-right"))))
-  
+
+(defmethod move-right ((piyo piyo))
+  (with-slots (position-x
+	       collision-x
+	       damage-collision-x
+	       velocity-x
+	       direction)
+      piyo
+    (setf direction "right")
+    (+= position-x velocity-x)
+    (+= collision-x velocity-x)
+    (+= damage-collision-x velocity-x)))
+
+;;;; generate-jump
+
 (defmethod generate-jump ((player player))
   (with-slots (jump-power jump-flag) player
     (let* ((start-jump-power jump-power)
@@ -392,6 +319,30 @@
 		      (setf jump-flag nil)
 		      (setf force start-jump-power))))))))))
 
+(defmethod generate-jump ((piyo piyo))
+  (with-slots (jump-power jump-flag) piyo
+    (let* ((start-jump-power jump-power)
+	   (force jump-power)
+	   (prev-y 0)
+	   (temp-y 0)) 
+      (lambda (&optional reset)
+	(progn
+	  (if (eq reset t)
+	      (setf force start-jump-power))
+	  (if (eq jump-flag t)
+	      (progn		
+		(setf prev-y temp-y)
+		(-= temp-y (floor force))
+		(-= (image-object-position-y piyo) (floor force))
+		(-= (image-object-collision-y piyo) (floor force))		
+		(if (not (<= (floor force) 0))
+		    (-= force 1.5)
+		    (progn
+		      (setf jump-flag nil)
+		      (setf force start-jump-power))))))))))
+
+;;;; jump
+
 (defmethod jump ((player player))
   (with-slots (var-jump
 	       ground-flag
@@ -404,6 +355,12 @@
       (if (string= direction "left") (setf action-name "jumping-left"))
       (if (string= direction "right") (setf action-name "jumping-right")))
     (funcall var-jump)))
+
+(defmethod jump ((piyo piyo))
+  (with-slots (var-jump) piyo
+    (funcall var-jump)))
+
+;;;; set sprite sheet
 
 (defmethod set-standing-left ((player player))
   (with-slots (filename
@@ -538,74 +495,83 @@
 			 collect (list x y width height))))
       (setf (sdl:cells fox-girl-damage-motion1-left) sprite-cells))))
 
-(defmethod set-fox-girl-damage-motion1-right ((player player))
+(defmethod set-standing-left ((piyo piyo))
   (with-slots (filename
 	       width
 	       height
 	       x-cell-count
 	       y-cell-count
-	       fox-girl-damage-motion1-right)
-      player
+	       standing-left)
+      piyo
     (let ((sprite-cells nil))
-      (setf fox-girl-damage-motion1-right (sdl:load-image (gethash "fox-girl-damage-motion1-right" filename)
-							  :color-key sdl:*black*))
+      (setf standing-left (sdl:load-image (gethash "piyo-standing-left" filename)
+					  :color-key sdl:*black*))
       (setf sprite-cells
 	    (loop for y from 0 to (* height y-cell-count) by height
 	       append (loop for x from 0 to (* width
-					       (gethash "fox-girl-damage-motion1-right"
+					       (gethash "piyo-standing-left"
 							x-cell-count)) by width
 			 collect (list x y width height))))
-      (setf (sdl:cells fox-girl-damage-motion1-right) sprite-cells))))
+      (setf (sdl:cells standing-left) sprite-cells))))
 
-(defmethod set-fox-girl-down-motion-left ((player player))
+(defmethod set-standing-right ((piyo piyo))
   (with-slots (filename
 	       width
 	       height
 	       x-cell-count
 	       y-cell-count
-	       fox-girl-down-motion-left)
-      player
+	       standing-right)
+      piyo
     (let ((sprite-cells nil))
-      (setf fox-girl-down-motion-left (sdl:load-image (gethash "fox-girl-down-motion-left" filename)
-						      :color-key sdl:*black*))
+      (setf standing-right (sdl:load-image (gethash "piyo-standing-right" filename)
+					  :color-key sdl:*black*))
       (setf sprite-cells
 	    (loop for y from 0 to (* height y-cell-count) by height
 	       append (loop for x from 0 to (* width
-					       (gethash "fox-girl-down-motion-left"
+					       (gethash "piyo-standing-right"
 							x-cell-count)) by width
 			 collect (list x y width height))))
-      (setf (sdl:cells fox-girl-down-motion-left) sprite-cells))))
+      (setf (sdl:cells standing-right) sprite-cells))))
 
-(defmethod set-fox-girl-down-motion-right ((player player))
+(defmethod set-walking-left ((piyo piyo))
   (with-slots (filename
 	       width
 	       height
 	       x-cell-count
 	       y-cell-count
-	       fox-girl-down-motion-right)
-      player
+	       walking-left)
+      piyo
     (let ((sprite-cells nil))
-      (setf fox-girl-down-motion-right (sdl:load-image (gethash "fox-girl-down-motion-right" filename)
-						       :color-key sdl:*black*))
+      (setf walking-left (sdl:load-image (gethash "piyo-walking-left" filename)
+					  :color-key sdl:*black*))
       (setf sprite-cells
 	    (loop for y from 0 to (* height y-cell-count) by height
 	       append (loop for x from 0 to (* width
-					       (gethash "fox-girl-down-motion-right"
+					       (gethash "piyo-walking-left"
 							x-cell-count)) by width
 			 collect (list x y width height))))
-      (setf (sdl:cells fox-girl-down-motion-right) sprite-cells))))
+      (setf (sdl:cells walking-left) sprite-cells))))
 
-(defmethod generate-sprite-sheet ((player player))
-  (set-standing-left player)
-  (set-standing-right player)
-  (set-running-left player)
-  (set-running-right player)
-  (set-jumping-left player)
-  (set-jumping-right player)
-  (set-fox-girl-damage-motion1-left player)
-  (set-fox-girl-damage-motion1-right player)
-  (set-fox-girl-down-motion-left player)
-  (set-fox-girl-down-motion-right player))
+(defmethod set-walking-right ((piyo piyo))
+  (with-slots (filename
+	       width
+	       height
+	       x-cell-count
+	       y-cell-count
+	       walking-right)
+      piyo
+    (let ((sprite-cells nil))
+      (setf walking-right (sdl:load-image (gethash "piyo-walking-right" filename)
+					  :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "piyo-walking-right"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells walking-right) sprite-cells))))
+
+;;;; animation
 
 (defmethod standing-left ((player player))
   (with-slots
@@ -848,17 +814,91 @@
       (if (not (= fox-girl-down-motion-right-current-cell
 		  (gethash "fox-girl-down-motion-right" total-cell-count)))
 	  (incf fox-girl-down-motion-right-current-cell)))))
-    
-(defmethod draw-sprite ((player player))
-  (with-slots (action-name) player
-    (cond ((string= action-name "standing-left") (standing-left player))
-	  ((string= action-name "standing-right") (standing-right player))
-	  ((string= action-name "running-left") (running-left player))
-	  ((string= action-name "running-right") (running-right player))
-	  ((string= action-name "jumping-left") (jumping-left player))
-	  ((string= action-name "jumping-right") (jumping-right player))
-	  ((string= action-name "fox-girl-damage-motion1-left") (fox-girl-damage-motion1-left player))
-	  ((string= action-name "fox-girl-damage-motion1-right") (fox-girl-damage-motion1-right player))
-	  ((string= action-name "fox-girl-down-motion-left") (fox-girl-down-motion-left player))
-	  ((string= action-name "fox-girl-down-motion-right") (fox-girl-down-motion-right player)))))
 
+(defmethod piyo-standing-left ((piyo piyo))
+  (with-slots
+	(position-x
+	 position-y
+	 standing-left
+	 standing-left-current-cell
+	 total-cell-count
+	 duration
+	 frame-counter)
+      piyo
+    (sdl:draw-surface-at-* standing-left
+			   position-x
+			   position-y
+			   :cell standing-left-current-cell)
+    (incf frame-counter)
+    (when (> frame-counter (gethash "piyo-standing-left" duration))
+      (incf standing-left-current-cell)
+      (setf frame-counter 0)
+      (if (> standing-left-current-cell (gethash "piyo-standing-left"
+						 total-cell-count))
+	  (setf standing-left-current-cell 0)))))
+
+(defmethod piyo-standing-right ((piyo piyo))
+  (with-slots
+	(position-x
+	 position-y
+	 standing-right
+	 standing-right-current-cell
+	 total-cell-count
+	 duration
+	 frame-counter)
+      piyo
+    (sdl:draw-surface-at-* standing-right
+			   position-x
+			   position-y
+			   :cell standing-right-current-cell)
+    (incf frame-counter)
+    (when (> frame-counter (gethash "piyo-standing-right" duration))
+      (incf standing-right-current-cell)
+      (setf frame-counter 0)
+      (if (> standing-right-current-cell (gethash "piyo-standing-right"
+						  total-cell-count))
+	  (setf standing-right-current-cell 0)))))
+
+(defmethod piyo-walking-left ((piyo piyo))
+  (with-slots
+	(position-x
+	 position-y
+	 walking-left
+	 walking-left-current-cell
+	 total-cell-count
+	 duration
+	 frame-counter)
+      piyo
+    (sdl:draw-surface-at-* walking-left
+			   position-x
+			   position-y
+			   :cell walking-left-current-cell)
+    (incf frame-counter)
+    (when (> frame-counter (gethash "piyo-walking-left" duration))
+      (incf walking-left-current-cell)
+      (setf frame-counter 0)
+      (if (> walking-left-current-cell (gethash "piyo-walking-left"
+						 total-cell-count))
+	  (setf walking-left-current-cell 0)))))
+
+(defmethod piyo-walking-right ((piyo piyo))
+  (with-slots
+	(position-x
+	 position-y
+	 walking-right
+	 walking-right-current-cell
+	 total-cell-count
+	 duration
+	 frame-counter)
+      piyo
+    (sdl:draw-surface-at-* walking-right
+			   position-x
+			   position-y
+			   :cell walking-right-current-cell)
+    (incf frame-counter)
+    (when (> frame-counter (gethash "piyo-walking-right" duration))
+      (incf walking-right-current-cell)
+      (setf frame-counter 0)
+      (if (> walking-right-current-cell (gethash "piyo-walking-right"
+						total-cell-count))
+	  (setf walking-right-current-cell 0)))))

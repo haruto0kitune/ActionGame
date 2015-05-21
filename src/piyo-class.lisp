@@ -2,7 +2,14 @@
 ;;;; piyo class
 ;;;;
 
-(load "sprite-sheet-class.lisp" :external-format :utf-8)
+(in-package :cl-user)
+(defpackage piyo-class
+  (:use :cl)
+  (:import-from :sprite-sheet-class)
+  (:export :piyo :initialize-piyo :update :move :draw-sprite))
+(in-package :piyo-class)
+
+;(load "sprite-sheet-class.lisp" :external-format :utf-8)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; collision-x = position-x + 9  ;;

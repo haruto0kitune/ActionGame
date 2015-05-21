@@ -20,7 +20,11 @@
 ;;;; left → cpx - hw
 ;;;; right → cpx + hw
 
-
+(in-package :cl-user)
+(defpackage collision
+  (:use :cl)
+  (:export :collide :bottom-collide))
+(in-package :collision)
 
 (defun collide (instance1 instance2)
   "Type of instance is image object"
