@@ -11,15 +11,9 @@
 		    :load-csv)
       (:import-from :sprite-sheet-class)
       (:import-from :player-class
-		    :player
-		    :update
-		    :draw-sprite
-		    :move
-		    :jump
-		    :hp)  
+		    :player)
       (:import-from :block-class
-		    :blocks
-		    :draw-sprite)
+		    :blocks)
       (:import-from :collision
 		    :collide
 		    :bottom-collide)
@@ -28,11 +22,13 @@
       (:import-from :load-json
 		    :load-json)
       (:import-from :piyo-class
-		    :piyo
-		    :initialize-piyo
+		    :piyo)
+      (:import-from :generic-function
 		    :update
 		    :move
-		    :draw-sprite)
+		    :draw-sprite
+		    :jump
+		    :hp)
       (:export :main))))
 (in-package :game)
 
@@ -315,22 +311,13 @@
 (defun generate-instance ()
   (setf *player* (make-instance 'player
 				:filename *filename*
-				:collision-x 643
-				:collision-y 15
-				:collision-width 39
-				:collision-height 113
 				:position-x 600
 				:position-y 0
-				:velocity-x 10
-				:velocity-y 10
-				:width 128
-				:height 128
 				:x-cell-count *cell*
 				:y-cell-count 0
 				:total-cell-count *cell*
 				:duration *duration*
-				:direction "left"
-				:draw-flag t))
+				:direction "left"))
   (setf *piyo* (make-instance 'piyo
 			      :filename *filename*
 			      :collision-x 109

@@ -1,7 +1,7 @@
 (in-package :cl-user)
 (defpackage block-class
   (:use :cl)
-  (:export :blocks :draw-sprite))
+  (:export :blocks))
 (in-package :block-class)
 
 (defclass blocks ()
@@ -99,45 +99,3 @@
     :initform nil
     :initarg :id)))
 
-(defmethod initialize-instance :after ((blocks blocks) &rest initargs)
-  (generate-sprite-sheet blocks))
-
-(defmethod generate-sprite-sheet ((blocks blocks))
-  (with-slots (filename width height x-cell-count y-cell-count sprite-sheet)
-      blocks
-    (let ((sprite-cells nil))
-      (setf sprite-sheet (sdl:load-image filename :color-key sdl:*black*))      
-      (setf sprite-cells
-	    (loop for y from 0 to (* height y-cell-count) by height
-		 append (loop for x from 0 to (* width x-cell-count) by width
-			   collect (list x y width height))))
-      (setf (sdl:cells sprite-sheet) sprite-cells))))
-  
-(defmethod draw-sprite ((blocks blocks))
-  (with-slots
-	(position-x
-	 position-y
-	 total-cell-count
-	 sprite-sheet
-	 current-cell
-	 duration
-	 frame-counter
-	 draw-flag
-	 id)
-      blocks
-    (cond ((= id 0)
-	   (sdl:draw-surface-at-* sprite-sheet
-				  position-x
-				  position-y
-				  :cell id))
-	  ((= id 1)
-	   (sdl:draw-surface-at-* sprite-sheet
-				  position-x
-				  position-y
-				  :cell id)))
-    (incf frame-counter)
-    (when (> frame-counter duration)
-      (incf current-cell)
-      (setf frame-counter 0)
-      (if (> current-cell total-cell-count)
-	  (setf current-cell 0)))))

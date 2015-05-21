@@ -29,7 +29,7 @@
 (in-package :cl-user)
 (defpackage sprite-sheet-class
   (:use :cl)
-  (:export :image-object :draw-sprite))
+  (:export :image-object))
 (in-package :sprite-sheet-class)
 
 (defgeneric generate-sprite-sheet (image-object))
@@ -114,34 +114,3 @@
     :initform nil
     :initarg :draw-flag)))
 
-(defmethod initialize-instance :after ((image-object image-object) &rest initargs)
-  (generate-sprite-sheet image-object))
-
-(defmethod generate-sprite-sheet ((image-object image-object))
-  (with-slots (filename width height x-cell-count y-cell-count sprite-sheet)
-      image-object
-    (let ((sprite-cells nil))
-      (setf sprite-sheet (sdl:load-image filename :color-key sdl:*black*))      
-      (setf sprite-cells
-	    (loop for y from 0 to (* height y-cell-count) by height
-		 append (loop for x from 0 to (* width x-cell-count) by width
-			   collect (list x y width height))))
-      (setf (sdl:cells sprite-sheet) sprite-cells))))
-  
-(defmethod draw-sprite ((image-object image-object))
-  (with-slots
-	(position-x
-	 position-y
-	 total-cell-count
-	 sprite-sheet
-	 current-cell
-	 duration
-	 frame-counter)
-      image-object
-    (sdl:draw-surface-at-* sprite-sheet position-x position-y :cell current-cell)
-    (incf frame-counter)
-    (when (> frame-counter duration)
-      (incf current-cell)
-      (setf frame-counter 0)
-      (if (> current-cell total-cell-count)
-	  (setf current-cell 0)))))
