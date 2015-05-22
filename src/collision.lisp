@@ -22,7 +22,9 @@
 
 (in-package :cl-user)
 (defpackage collision
-  (:use :cl)
+  (:use :cl
+	:class
+	:util)
   (:export :collide :bottom-collide))
 (in-package :collision)
 

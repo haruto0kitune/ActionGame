@@ -1,78 +1,15 @@
 (in-package :cl-user)
 (defpackage generic-function
-  (:use :cl)
-  (:import-from :sprite-sheet-class
-		:image-object)
-  (:import-from :player-class
-		:player
-		:hp
-		:filename
-		:collision-x
-		:collision-y
-		:collision-width
-		:collision-height
-		:damage-collision-x
-		:damage-collision-y
-		:damage-collision-width
-		:damage-collision-height
-		:position-x
-		:position-y
-		:velocity-x
-		:velocity-y
-		:width
-		:height
-		:x-cell-count
-		:y-cell-count
-		:total-cell-count
-		:current-cell
-		:standing-left-current-cell
-		:standing-right-current-cell
-		:running-left-current-cell
-		:running-right-current-cell
-		:jumping-left-current-cell
-		:jumping-right-current-cell
-		:fox-girl-damage-motion1-left-current-cell
-		:fox-girl-damage-motion1-right-current-cell
-		:fox-girl-down-motion-left-current-cell
-		:fox-girl-down-motion-right-current-cell
-		:duration
-		:frame-counter
-		:cx-minus-px
-		:cy-minux-py
-		:direction
-		:jump-power
-		:action-name
-		:var-jump
-		:draw-flag
-		:ground-flag
-		:air-flag
-		:top-collision-flag
-		:bottom-collision-flag
-		:left-collision-flag
-		:right-collision-flag
-		:standing-left
-		:standing-right
-		:walking-left
-		:walking-right
-		:running-left
-		:running-right
-		:jumping-left
-		:jumping-right
-		:crouching-left
-		:crouching-right
-		:atemi1-left
-		:atemi1-right
-		:fox-girl-damage-motion1-left
-		:fox-girl-damage-motion1-right
-		:fox-girl-down-motion-left
-		:fox-girl-down-motion-right)
-  (:import-from :piyo-class
-		:piyo)
-  (:import-from :key-state
-		:key-state
-		:defkeystate)
-  (:import-from :block-class
-		:blocks))
+  (:use :cl
+	:class
+	:util)
+  (:export :draw-sprite
+	   :key-state
+	   :update-key-state
+	   :update
+	   :move
+	   :jump
+	   :hp))
 (in-package :generic-function)
 
 ;;;; initialize-instance
@@ -576,6 +513,44 @@
 							x-cell-count)) by width
 			 collect (list x y width height))))
       (setf (sdl:cells fox-girl-damage-motion1-right) sprite-cells))))
+
+(defmethod set-fox-girl-down-motion-left ((player player))
+  (with-slots (filename
+	       width
+	       height
+	       x-cell-count
+	       y-cell-count
+	       fox-girl-down-motion-left)
+      player
+    (let ((sprite-cells nil))
+      (setf fox-girl-down-motion-left (sdl:load-image (gethash "fox-girl-down-motion-left" filename)
+						      :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "fox-girl-down-motion-left"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells fox-girl-down-motion-left) sprite-cells))))
+
+(defmethod set-fox-girl-down-motion-right ((player player))
+  (with-slots (filename
+	       width
+	       height
+	       x-cell-count
+	       y-cell-count
+	       fox-girl-down-motion-right)
+      player
+    (let ((sprite-cells nil))
+      (setf fox-girl-down-motion-right (sdl:load-image (gethash "fox-girl-down-motion-right" filename)
+						       :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "fox-girl-down-motion-right"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells fox-girl-down-motion-right) sprite-cells))))
 
 (defmethod set-standing-left ((piyo piyo))
   (with-slots (filename

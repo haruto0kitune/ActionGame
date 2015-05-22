@@ -1,6 +1,8 @@
 (in-package :cl-user)
 (defpackage gravity
-  (:use :cl)
+  (:use :cl
+	:class
+	:util)
   (:export :generate-free-fall))
 (in-package :gravity)
 

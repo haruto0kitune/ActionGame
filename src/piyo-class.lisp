@@ -6,7 +6,60 @@
 (defpackage piyo-class
   (:use :cl)
   (:import-from :sprite-sheet-class)
-  (:export :piyo))
+  (:export :piyo
+	   :hp
+	   :filename
+	   :collision-x
+	   :collision-y
+	   :collision-width
+	   :collision-height
+	   :attack-collision-x
+	   :attack-collision-y
+	   :attack-collision-width
+	   :attack-collision-height
+	   :damage-collision-x
+	   :damage-collision-y
+	   :damage-collision-width
+	   :damage-collision-height
+	   :position-x
+	   :position-y
+	   :velocity-x
+	   :velocity-y
+	   :width
+	   :height
+	   :x-cell-count
+	   :y-cell-count
+	   :total-cell-count
+	   :sprite-sheet
+	   :current-cell
+	   :standing-left-current-cell
+	   :standing-right-current-cell
+	   :walking-left-current-cell
+	   :walking-right-current-cell
+	   :duration
+	   :frame-counter
+	   :cx-minus-px
+	   :cy-minus-py
+	   :direction
+	   :jump-power
+	   :action-name
+	   :var-jump
+	   :draw-flag
+	   :jump-flag
+	   :ground-flag
+	   :air-flag
+	   :top-collision-flag
+	   :bottom-collision-flag
+	   :left-collision-flag
+	   :right-collision-flag
+	   :standing-left
+	   :standing-right
+	   :walking-left
+	   :walking-right
+	   :jumping-left
+	   :jumping-right
+	   :attack1-left
+	   :attack1-right))
 (in-package :piyo-class)
 
 ;(load "sprite-sheet-class.lisp" :external-format :utf-8)
@@ -22,10 +75,6 @@
     :accessor image-object-hp
     :initform 1
     :initarg :hp)
-   (frames
-    :accessor image-object-frames
-    :initform nil
-    :initarg :frames)
    (filename
     :documentation "hash table"
     :accessor image-object-filename
