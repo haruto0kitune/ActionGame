@@ -38,20 +38,16 @@
     :initarg :filename)
    (collision-x
     :accessor image-object-collision-x
-    :initform 0
-    :initarg :collision-x)
+    :initform 0)
    (collision-y
     :accessor image-object-collision-y
-    :initform 0
-    :initarg :collision-y)
+    :initform 0)
    (collision-width
     :accessor image-object-collision-width
-    :initform 0
-    :initarg :collision-width)
+    :initform 0)
    (collision-height
     :accessor image-object-collision-height
-    :initform 0
-    :initarg :collision-height)
+    :initform 0)
    (position-x
     :accessor image-object-position-x
     :initform 0
@@ -62,12 +58,10 @@
     :initarg :position-y)
    (velocity-x
     :accessor image-object-velocity-x
-    :initform 0
-    :initarg :velocity-x)
+    :initform 0)
    (velocity-y
     :accessor image-object-velocity-y
-    :initform 0
-    :initarg :velocity-y)
+    :initform 0)
    (width
     :accessor image-object-width
     :initform 0
@@ -79,22 +73,18 @@
    (x-cell-count
     :documentation "take 1 from actual number"
     :accessor image-object-x-cell-count
-    :initform 0
-    :initarg :x-cell-count)
+    :initform 0)
    (y-cell-count
     :documentation "take 1 from actual number"
     :accessor image-object-y-cell-count
-    :initform 0
-    :initarg :y-cell-count)
+    :initform 0)
    (total-cell-count
     :documentation "take 1 from actual number"
     :accessor image-object-total-cell-count
-    :initform 0
-    :initarg :total-cell-count)
+    :initform 0)
    (sprite-sheet
     :accessor image-object-sprite-sheet
-    :initform nil
-    :initarg :sprite-sheet)
+    :initform nil)
    (current-cell
     :accessor image-object-current-cell
     :initform 0

@@ -59,8 +59,7 @@
     :initarg :current-cell)
    (duration
     :accessor image-object-duration
-    :initform 0
-    :initarg :duration)
+    :initform 0)
    (frame-counter
     :initform 0)
    (draw-flag

@@ -28,21 +28,6 @@
 
 ;; hash table for action-name
 (defparameter *action-name* (make-hash-table :test #'equal))
-(setf (gethash "standing-left" *action-name*) "standing-left")
-(setf (gethash "standing-right" *action-name*) "standing-right")
-(setf (gethash "running-left" *action-name*) "running-left")
-(setf (gethash "running-right" *action-name*) "running-right")
-(setf (gethash "jumping-left" *action-name*) "jumping-left")
-(setf (gethash "jumping-right" *action-name*) "jumping-right")
-(setf (gethash "fox-girl-damage-motion1-left" *action-name*) "fox-girl-damage-motion1-left")
-(setf (gethash "fox-girl-damage-motion1-right" *action-name*) "fox-girl-damage-motion1-right")
-(setf (gethash "fox-girl-down-motion-left" *action-name*) "fox-girl-down-motion-left")
-(setf (gethash "fox-girl-down-motion-right" *action-name*) "fox-girl-down-motion-right")
-(setf (gethash "piyo-standing-left" *action-name*) "piyo-standing-left")
-(setf (gethash "piyo-standing-right" *action-name*) "piyo-standing-right")
-(setf (gethash "piyo-walking-left" *action-name*) "piyo-walking-left")
-(setf (gethash "piyo-walking-right" *action-name*) "piyo-walking-right")
-
 
 ;; hash table for filename
 (defparameter *filename* (make-hash-table :test #'equal))
@@ -80,37 +65,6 @@
       "../pixel_animation/enemy/enemy1_walk_left.png")
 (setf (gethash "piyo-walking-right" *filename*)
       "../pixel_animation/enemy/enemy1_walk_right.png")
-
-;; hash table for duration
-(defparameter *duration* (make-hash-table :test #'equal))
-(setf (gethash "standing-left" *duration*) 7)
-(setf (gethash "standing-right" *duration*) 7)
-(setf (gethash "running-left" *duration*) 4)
-(setf (gethash "running-right" *duration*) 4)
-(setf (gethash "jumping-left" *duration*) 4)
-(setf (gethash "jumping-right" *duration*) 4)
-(setf (gethash "fox-girl-damage-motion1-left" *duration*) 4)
-(setf (gethash "fox-girl-damage-motion1-right" *duration*) 4)
-(setf (gethash "fox-girl-down-motion-left" *duration*) 4)
-(setf (gethash "fox-girl-down-motion-right" *duration*) 4)
-(setf (gethash "piyo-standing-left" *duration*) 1)
-(setf (gethash "piyo-standing-right" *duration*) 1)
-(setf (gethash "piyo-walking-left" *duration*) 3)
-(setf (gethash "piyo-walking-right" *duration*) 3)
-
-;; hash table for cells
-;; actual cell - 1
-(defparameter *cell* (make-hash-table :test #'equal))
-(setf (gethash "block" *cell*) 2)
-
-;; filename
-(defparameter *background* "../pixel_animation/background.png")
-(defparameter *standing_right* "../pixel_animation/player_standing.png")
-(defparameter *standing_left* "../pixel_animation/player_standing_left.png")
-(defparameter *dash_left* "../pixel_animation/player_dash_left.png")
-(defparameter *dash_right* "../pixel_animation/player_dash.png")
-(defparameter *jump_right* "../pixel_animation/player_jump.png")
-(defparameter *jump_left* "../pixel_animation/player_jump_left.png")
 
 ;;sprite width height
 (defparameter *sprite-width* 128)
@@ -253,34 +207,23 @@
 (defun generate-instance ()
   (setf *player* (make-instance 'player
 				:filename *filename*
-;				:collision-x 643
-;				:collision-y 15
-;				:collision-width 39
-;				:collision-height 113
 				:position-x 200
 				:position-y 300
-;				:velocity-x 10
-;				:velocity-y 10
-;				:width 128
-;				:height 128
-				:duration *duration*
 				:direction "left"
 				:draw-flag t))
   (setf *piyo* (make-instance 'piyo
 			      :filename *filename*
 			      :position-x 100			      
 			      :position-y 0
-			      :duration *duration*
 			      :direction "right"
-			      :action-name "piyo-walking-right"
+;			      :action-name "piyo-walking-right"
 			      :draw-flag t))
   (setf *piyo2* (make-instance 'piyo
 			      :filename *filename*
 			      :position-x 200			      
 			      :position-y 0
-			      :duration *duration*
 			      :direction "right"
-			      :action-name "piyo-walking-right"
+;			      :action-name "piyo-walking-right"
 			      :draw-flag t))
   (setf *background*
 	(make-instance 'image-object

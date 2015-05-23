@@ -17,10 +17,6 @@
     :accessor image-object-hp
     :initform 1
     :initarg :hp)
-   (frames
-    :accessor image-object-frames
-    :initform nil
-    :initarg :frames)
    (filename
     :documentation "hash table"
     :accessor image-object-filename
@@ -120,8 +116,7 @@
     :initarg :walking-right-current-cell)
    (duration
     :accessor image-object-duration
-    :initform 0
-    :initarg :duration)
+    :initform (make-hash-table :test #'equal))
    (frame-counter
     :initform 0)
    (cx-minus-px
@@ -144,8 +139,7 @@
    (action-name
     :documentation "action flag"
     :accessor image-object-action-name
-    :initform "piyo-standing-left"
-    :initarg :action-name)
+    :initform nil)
    (var-jump
     :accessor image-object-var-jump
     :initform nil)
@@ -215,6 +209,13 @@
     :initform nil
     :initarg :attack1-right)))
 
+(defmethod set-duration ((piyo piyo))
+  (with-slots (duration) piyo
+    (setf (gethash "piyo-standing-left" duration) 1)
+    (setf (gethash "piyo-standing-right" duration) 1)
+    (setf (gethash "piyo-walking-left" duration) 3)
+    (setf (gethash "piyo-walking-right" duration) 3)))
+
 (defmethod set-x-cell-count ((piyo piyo))
   (with-slots (x-cell-count) piyo
     (setf (gethash "piyo-standing-left" x-cell-count) 0)
@@ -239,8 +240,15 @@
 	       attack-collision-x
 	       attack-collision-y
 	       attack-collision-width
-	       attack-collision-height)
+	       attack-collision-height
+	       direction
+	       action-name)
       piyo
+    (cond ((string= direction "left")
+	   (setf action-name "piyo-standing-left"))
+	  ((string= direction "right")
+	   (setf action-name "piyo-standing-right")))
+    (set-duration piyo)
     (setf collision-x (+ position-x collision-x))
     (setf collision-y (+ position-y collision-y))
     (set-x-cell-count piyo)

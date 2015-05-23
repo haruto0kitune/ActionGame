@@ -12,10 +12,6 @@
     :accessor image-object-hp
     :initform 1
     :initarg :hp)
-   (frames
-    :accessor image-object-frames
-    :initform nil
-    :initarg :frames)
    (filename
     :documentation "hash table"
     :accessor image-object-filename
@@ -130,8 +126,7 @@
     :initarg :fox-girl-down-motion-right-current-cell)
    (duration
     :accessor image-object-duration
-    :initform 0
-    :initarg :duration)
+    :initform (make-hash-table :test #'equal))
    (frame-counter
     :initform 0)
    (cx-minus-px
@@ -154,7 +149,7 @@
    (action-name
     :documentation "action flag"
     :accessor image-object-action-name
-    :initform "standing-left")
+    :initform nil)
    (var-jump
     :accessor image-object-var-jump
     :initform nil)
@@ -291,8 +286,14 @@
 	       damage-collision-x
 	       damage-collision-y
 	       damage-collision-width
-	       damage-collision-height)
+	       damage-collision-height
+	       direction
+	       action-name)
       player
+    (cond ((string= direction "left")
+	   (setf action-name "standing-left"))
+	  ((string= direction "right")
+	   (setf action-name "standing-right")))
     (set-x-cell-count player)
     (set-total-cell-count player)
     (setf collision-x (+ position-x collision-x))
@@ -329,6 +330,19 @@
     (setf (gethash "fox-girl-down-motion-left" total-cell-count) 8)
     (setf (gethash "fox-girl-down-motion-right" total-cell-count) 8)))
 
+(defmethod set-duration ((player player))
+  (with-slots (duration) player
+    (setf (gethash "standing-left" duration) 7)
+    (setf (gethash "standing-right" duration) 7)
+    (setf (gethash "running-left" duration) 4)
+    (setf (gethash "running-right" duration) 4)
+    (setf (gethash "jumping-left" duration) 4)
+    (setf (gethash "jumping-right" duration) 4)
+    (setf (gethash "fox-girl-damage-motion1-left" duration) 4)
+    (setf (gethash "fox-girl-damage-motion1-right" duration) 4)
+    (setf (gethash "fox-girl-down-motion-left" duration) 4)
+    (setf (gethash "fox-girl-down-motion-right" duration) 4)))
+
 (defmethod initialize-player ((player player))  
   (with-slots (position-x
 	       position-y
@@ -338,6 +352,7 @@
 	       cy-minus-py
 	       var-jump)
       player
+    (set-duration player)
     (generate-sprite-sheet player)
     (setf var-jump (generate-jump player))
     (setf cx-minus-px (- collision-x position-x))
