@@ -23,13 +23,11 @@
 			 (:file "piyo-class")
 			 (:file "main" :depends-on ("key-state"
 						    "load-csv"
-						    "sprite-sheet-class"
-						    "player-class"
-						    "block-class"
 						    "collision"
 						    "gravity"
 						    "load-json"
 						    "piyo-class"))))))
+
 
 				
 				
