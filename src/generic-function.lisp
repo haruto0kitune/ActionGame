@@ -1,17 +1,15 @@
 (in-package :cl-user)
 (defpackage generic-function
-  (:use :cl)
-  (:import-from :sprite-sheet-class
-		:image-object)
-  (:import-from :player-class
-		:player)
-  (:import-from :piyo-class
-		:piyo)
-  (:import-from :key-state
-		:key-state
-		:defkeystate)
-  (:import-from :block-class
-		:blocks))
+  (:use :cl
+	:class
+	:util)
+  (:export :draw-sprite
+	   :key-state
+	   :update-key-state
+	   :update
+	   :move
+	   :jump
+	   :hp))
 (in-package :generic-function)
 
 ;;;; initialize-instance
@@ -38,6 +36,8 @@
 	       damage-collision-width
 	       damage-collision-height)
       player
+    (setf collision-x (+ position-x 43))
+    (setf collision-y (+ collision-y 15))
     (setf damage-collision-x collision-x)
     (setf damage-collision-y collision-y)
     (setf damage-collision-width collision-width)
@@ -298,7 +298,7 @@
 ;;;; generate-jump
 
 (defmethod generate-jump ((player player))
-  (with-slots (jump-power jump-flag) player
+  (with-slots (jump-power jump-flag position-y collision-y) player
     (let* ((start-jump-power jump-power)
 	   (force jump-power)
 	   (prev-y 0)
@@ -311,8 +311,8 @@
 	      (progn		
 		(setf prev-y temp-y)
 		(-= temp-y (floor force))
-		(-= (image-object-position-y player) (floor force))
-		(-= (image-object-collision-y player) (floor force))		
+		(-= position-y (floor force))
+		(-= collision-y (floor force))		
 		(if (not (<= (floor force) 0))
 		    (-= force 1.5)
 		    (progn
@@ -320,7 +320,7 @@
 		      (setf force start-jump-power))))))))))
 
 (defmethod generate-jump ((piyo piyo))
-  (with-slots (jump-power jump-flag) piyo
+  (with-slots (jump-power jump-flag position-y collision-y) piyo
     (let* ((start-jump-power jump-power)
 	   (force jump-power)
 	   (prev-y 0)
@@ -333,8 +333,8 @@
 	      (progn		
 		(setf prev-y temp-y)
 		(-= temp-y (floor force))
-		(-= (image-object-position-y piyo) (floor force))
-		(-= (image-object-collision-y piyo) (floor force))		
+		(-= position-y (floor force))
+		(-= collision-y (floor force))		
 		(if (not (<= (floor force) 0))
 		    (-= force 1.5)
 		    (progn
@@ -494,6 +494,63 @@
 							x-cell-count)) by width
 			 collect (list x y width height))))
       (setf (sdl:cells fox-girl-damage-motion1-left) sprite-cells))))
+
+(defmethod set-fox-girl-damage-motion1-right ((player player))
+  (with-slots (filename
+	       width
+	       height
+	       x-cell-count
+	       y-cell-count
+	       fox-girl-damage-motion1-right)
+      player
+    (let ((sprite-cells nil))
+      (setf fox-girl-damage-motion1-right (sdl:load-image (gethash "fox-girl-damage-motion1-right" filename)
+							 :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "fox-girl-damage-motion1-right"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells fox-girl-damage-motion1-right) sprite-cells))))
+
+(defmethod set-fox-girl-down-motion-left ((player player))
+  (with-slots (filename
+	       width
+	       height
+	       x-cell-count
+	       y-cell-count
+	       fox-girl-down-motion-left)
+      player
+    (let ((sprite-cells nil))
+      (setf fox-girl-down-motion-left (sdl:load-image (gethash "fox-girl-down-motion-left" filename)
+						      :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "fox-girl-down-motion-left"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells fox-girl-down-motion-left) sprite-cells))))
+
+(defmethod set-fox-girl-down-motion-right ((player player))
+  (with-slots (filename
+	       width
+	       height
+	       x-cell-count
+	       y-cell-count
+	       fox-girl-down-motion-right)
+      player
+    (let ((sprite-cells nil))
+      (setf fox-girl-down-motion-right (sdl:load-image (gethash "fox-girl-down-motion-right" filename)
+						       :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "fox-girl-down-motion-right"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells fox-girl-down-motion-right) sprite-cells))))
 
 (defmethod set-standing-left ((piyo piyo))
   (with-slots (filename

@@ -1,3 +1,30 @@
+<<<<<<< HEAD
+(in-package :cl-user)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (unless (find-package :game)    
+    (defpackage game
+      (:use :cl
+	    :class
+	    :util)
+      (:import-from :load-csv
+		    :load-csv)
+      (:import-from :collision
+		    :collide
+		    :bottom-collide)
+      (:import-from :gravity
+		    :generate-free-fall)
+      (:import-from :load-json
+		    :load-json)
+      (:import-from :generic-function
+		    :update
+		    :move
+		    :draw-sprite
+		    :jump
+		    :hp)
+      (:export :main))))
+(in-package :game)
+
+=======
 (in-package :game)
 
 (defkeystate key-state
@@ -6,6 +33,7 @@
   (up :sdl-key-up)
   (x :sdl-key-x))
 
+>>>>>>> hotfix
 ;;;; debug
 (declaim (optimize (debug 3) (safety 3)
                    (speed 0) (space 0) (compilation-speed 0)))
@@ -273,22 +301,13 @@
 (defun generate-instance ()
   (setf *player* (make-instance 'player
 				:filename *filename*
-				:collision-x 643
-				:collision-y 15
-				:collision-width 39
-				:collision-height 113
 				:position-x 600
 				:position-y 0
-				:velocity-x 10
-				:velocity-y 10
-				:width 128
-				:height 128
 				:x-cell-count *cell*
 				:y-cell-count 0
 				:total-cell-count *cell*
 				:duration *duration*
-				:direction "left"
-				:draw-flag t))
+				:direction "left"))
   (setf *piyo* (make-instance 'piyo
 			      :filename *filename*
 			      :collision-x 109
@@ -416,9 +435,8 @@
 (defun draw ()
   ;; damage piyo
   (when (eq (damage-detect *piyo*) t)
-    (if (>= (image-object-hp *player*) 1)
+    (if (>= (hp *player*) 1)
 	(hp *player* -1))
-;      (-= (image-object-hp *player*) 1))
     (cond ((string= (image-object-direction *player*) "left")
 	   (format t "l~%")
 	   (setf (image-object-action-name *player*) "fox-girl-damage-motion1-left"))
@@ -427,15 +445,15 @@
 	   (setf (image-object-action-name *player*) "fox-girl-damage-motion1-right"))))
   ;; damage piyo2
   (when (eq (damage-detect *piyo2*) t)
-    (if (>= (image-object-hp *player*) 1) 
-      (-= (image-object-hp *player*) 1))
+    (if (>= (hp *player*) 1) 
+	(hp *player* -1))
     (cond ((string= (image-object-direction *player*) "left")
 	   (format t "l~%")
 	   (setf (image-object-action-name *player*) "fox-girl-damage-motion1-left"))
 	  ((string= (image-object-direction *player*) "right")
 	   (format t "r~%")
 	   (setf (image-object-action-name *player*) "fox-girl-damage-motion1-right"))))
-  (when (<= (image-object-hp *player*) 0)
+  (when (<= (hp *player*) 0)
     (cond ((string= (image-object-direction *player*) "left")
 	   (format t "l~%")
 	   (setf (image-object-action-name *player*) "fox-girl-down-motion-left"))
@@ -608,7 +626,7 @@
     nil))  
 
 (defun gameover ()
-  (when (<= (image-object-hp *player*) 0)
+  (when (<= (hp *player*) 0)
     (cond ((string= (image-object-direction *player*) "left")
 	   (setf (image-object-action-name *player*) "fox-girl-down-motion-left"))
 	  ((string= (image-object-direction *player*) "right")
@@ -637,8 +655,8 @@
       (:key-up-event (:key key)
 		     (update-key-state key nil *current-key-state*))
       (:idle ()
-	     (format t "hp:~a~%" (image-object-hp *player*))
-	     (if (<= (image-object-hp *player*) 0)
+	     (format t "hp:~a~%" (hp *player*))
+	     (if (<= (hp *player*) 0)
 	       (progn
 		 (sdl:clear-display sdl:*black*)	
 		 (check-jump-flag)
