@@ -1,5 +1,9 @@
 (in-package :cl-user)
 
+(defpackage util
+  (:use :cl)
+  (:export :-= :+=))
+
 (defpackage load-json
   (:use :cl)
   (:export :load-json))
@@ -15,8 +19,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (unless (find-package :game)    
     (defpackage game
-      (:use :cl :key-state)
-      (:import-from :util)
+      (:use :cl
+	    :key-state
+	    :util)
       (:import-from :key-state
 		    :key-state
 		    :update-key-state
