@@ -3,24 +3,19 @@
 (defclass blocks ()
   ((filename
     :accessor image-object-filename
-    :initform nil
-    :initarg :filename)
+    :initform "../pixel_animation/test1.png")
    (collision-x
     :accessor image-object-collision-x
-    :initform 0
-    :initarg :collision-x)
+    :initform 0)
    (collision-y
     :accessor image-object-collision-y
-    :initform 0
-    :initarg :collision-y)
+    :initform 0)
    (collision-width
     :accessor image-object-collision-width
-    :initform 0
-    :initarg :collision-width)
+    :initform 40)
    (collision-height
     :accessor image-object-collision-height
-    :initform 0
-    :initarg :collision-height)
+    :initform 40)
    (position-x
     :accessor image-object-position-x
     :initform 0
@@ -31,25 +26,20 @@
     :initarg :position-y)
    (velocity-x
     :accessor image-object-velocity-x
-    :initform 0
-    :initarg :velocity-x)
+    :initform 0)
    (velocity-y
     :accessor image-object-velocity-y
-    :initform 0
-    :initarg :velocity-y)
+    :initform 0)
    (width
     :accessor image-object-width
-    :initform 0
-    :initarg :width)
+    :initform 40)
    (height
     :accessor image-object-height
-    :initform 0
-    :initarg :height)
+    :initform 40)
    (x-cell-count
     :documentation "take 1 from actual number"
     :accessor image-object-x-cell-count
-    :initform 0
-    :initarg :x-cell-count)
+    :initform 2)
    (y-cell-count
     :documentation "take 1 from actual number"
     :accessor image-object-y-cell-count
@@ -58,8 +48,7 @@
    (total-cell-count
     :documentation "take 1 from actual number"
     :accessor image-object-total-cell-count
-    :initform 0
-    :initarg :total-cell-count)
+    :initform 2)
    (sprite-sheet
     :accessor image-object-sprite-sheet
     :initform nil
@@ -96,7 +85,14 @@
     :initarg :id)))
 
 (defmethod initialize-instance :after ((blocks blocks) &rest initargs)
-  (generate-sprite-sheet blocks))
+  (with-slots (position-x
+	       position-y
+	       collision-x
+	       collision-y)
+      blocks
+    (setf collision-x position-x)
+    (setf collision-y position-y)
+    (generate-sprite-sheet blocks)))
 
 (defmethod generate-sprite-sheet ((blocks blocks))
   (with-slots (filename width height x-cell-count y-cell-count sprite-sheet)

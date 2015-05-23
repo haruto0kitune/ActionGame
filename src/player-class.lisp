@@ -23,36 +23,28 @@
     :initarg :filename)
    (collision-x
     :accessor image-object-collision-x
-    :initform 0
-    :initarg :collision-x)
+    :initform 43)
    (collision-y
     :accessor image-object-collision-y
-    :initform 0
-    :initarg :collision-y)
+    :initform 15)
    (collision-width
     :accessor image-object-collision-width
-    :initform 0
-    :initarg :collision-width)
+    :initform 39)
    (collision-height
     :accessor image-object-collision-height
-    :initform 0
-    :initarg :collision-height)
+    :initform 113)
    (damage-collision-x
     :accessor image-object-damage-collision-x
-    :initform 0
-    :initarg :damage-collision-x)
+    :initform 0)
    (damage-collision-y
     :accessor image-object-damage-collision-y
-    :initform 0
-    :initarg :damage-collision-y)
+    :initform 0)
    (damage-collision-width
     :accessor image-object-damage-collision-width
-    :initform 0
-    :initarg :damage-collision-width)
+    :initform 39)
    (damage-collision-height
     :accessor image-object-damage-collision-height
-    :initform 0
-    :initarg :damage-collision-height)
+    :initform 113)
    (position-x
     :accessor image-object-position-x
     :initform 0
@@ -63,24 +55,20 @@
     :initarg :position-y)
    (velocity-x
     :accessor image-object-velocity-x
-    :initform 0
-    :initarg :velocity-x)
+    :initform 10)
    (velocity-y
     :accessor image-object-velocity-y
-    :initform 0
-    :initarg :velocity-y)
+    :initform 10)
    (width
     :accessor image-object-width
-    :initform 0
-    :initarg :width)
+    :initform 128)
    (height
     :accessor image-object-height
-    :initform 0
-    :initarg :height)
+    :initform 128)
    (x-cell-count
     :documentation "take 1 from actual number"
     :accessor image-object-x-cell-count
-    :initform 0
+    :initform (make-hash-table :test #'equal)
     :initarg :x-cell-count)
    (y-cell-count
     :documentation "take 1 from actual number"
@@ -90,7 +78,7 @@
    (total-cell-count
     :documentation "take 1 from actual number"
     :accessor image-object-total-cell-count
-    :initform 0
+    :initform (make-hash-table :test #'equal)
     :initarg :total-cell-count)
    (sprite-sheet
     :accessor image-object-sprite-sheet
@@ -290,7 +278,9 @@
     (setf damage-collision-y collision-y)))
 
 (defmethod initialize-instance :after ((player player) &rest initargs)
-  (with-slots (collision-x
+  (with-slots (position-x
+	       position-y
+	       collision-x
 	       collision-y
 	       collision-width
 	       collision-height
@@ -303,11 +293,41 @@
 	       damage-collision-width
 	       damage-collision-height)
       player
+    (set-x-cell-count player)
+    (set-total-cell-count player)
+    (setf collision-x (+ position-x collision-x))
+    (setf collision-y (+ position-y collision-y))
     (setf damage-collision-x collision-x)
     (setf damage-collision-y collision-y)
     (setf damage-collision-width collision-width)
     (setf damage-collision-height collision-height)
     (initialize-player player)))
+
+(defmethod set-x-cell-count ((player player))
+  (with-slots (x-cell-count) player
+    (setf (gethash "standing-left" x-cell-count) 11)
+    (setf (gethash "standing-right" x-cell-count) 11)
+    (setf (gethash "running-left" x-cell-count) 7)
+    (setf (gethash "running-right" x-cell-count) 7)
+    (setf (gethash "jumping-left" x-cell-count) 3)
+    (setf (gethash "jumping-right" x-cell-count) 3)
+    (setf (gethash "fox-girl-damage-motion1-left" x-cell-count) 2)
+    (setf (gethash "fox-girl-damage-motion1-right" x-cell-count) 2)
+    (setf (gethash "fox-girl-down-motion-left" x-cell-count) 8)
+    (setf (gethash "fox-girl-down-motion-right" x-cell-count) 8)))
+
+(defmethod set-total-cell-count ((player player))
+  (with-slots (total-cell-count) player
+    (setf (gethash "standing-left" total-cell-count) 11)
+    (setf (gethash "standing-right" total-cell-count) 11)
+    (setf (gethash "running-left" total-cell-count) 7)
+    (setf (gethash "running-right" total-cell-count) 7)
+    (setf (gethash "jumping-left" total-cell-count) 3)
+    (setf (gethash "jumping-right" total-cell-count) 3)
+    (setf (gethash "fox-girl-damage-motion1-left" total-cell-count) 2)
+    (setf (gethash "fox-girl-damage-motion1-right" total-cell-count) 2)
+    (setf (gethash "fox-girl-down-motion-left" total-cell-count) 8)
+    (setf (gethash "fox-girl-down-motion-right" total-cell-count) 8)))
 
 (defmethod initialize-player ((player player))  
   (with-slots (position-x
@@ -857,3 +877,5 @@
 	  ((string= action-name "fox-girl-down-motion-left") (fox-girl-down-motion-left player))
 	  ((string= action-name "fox-girl-down-motion-right") (fox-girl-down-motion-right player)))))
 
+;(defmethod reset ((player player))
+  

@@ -28,52 +28,40 @@
     :initarg :filename)
    (collision-x
     :accessor image-object-collision-x
-    :initform 0
-    :initarg :collision-x)
+    :initform 9)
    (collision-y
     :accessor image-object-collision-y
-    :initform 0
-    :initarg :collision-y)
+    :initform 13)
    (collision-width
     :accessor image-object-collision-width
-    :initform 0
-    :initarg :collision-width)
+    :initform 40)
    (collision-height
     :accessor image-object-collision-height
-    :initform 0
-    :initarg :collision-height)
+    :initform 40)
    (attack-collision-x
     :accessor image-object-attack-collision-x
-    :initform 0
-    :initarg :attack-collision-x)
+    :initform 0)
    (attack-collision-y
     :accessor image-object-attack-collision-y
-    :initform 0
-    :initarg :attack-collision-y)
+    :initform 0)
    (attack-collision-width
     :accessor image-object-attack-collision-width
-    :initform 0
-    :initarg :attack-collision-width)
+    :initform 0)
    (attack-collision-height
     :accessor image-object-attack-collision-height
-    :initform 0
-    :initarg :attack-collision-height)
+    :initform 0)
    (damage-collision-x
     :accessor image-object-damage-collision-x
-    :initform 0
-    :initarg :damage-collision-x)
+    :initform 9)
    (damage-collision-y
     :accessor image-object-damage-collision-y
-    :initform 0
-    :initarg :damage-collision-y)
+    :initform 13)
    (damage-collision-width
     :accessor image-object-damage-collision-width
-    :initform 0
-    :initarg :damage-collision-width)
+    :initform 40)
    (damage-collision-height
     :accessor image-object-damage-collision-height
-    :initform 0
-    :initarg :damage-collision-height)
+    :initform 40)
    (position-x
     :accessor image-object-position-x
     :initform 0
@@ -84,35 +72,28 @@
     :initarg :position-y)
    (velocity-x
     :accessor image-object-velocity-x
-    :initform 0
-    :initarg :velocity-x)
+    :initform 5)
    (velocity-y
     :accessor image-object-velocity-y
-    :initform 0
-    :initarg :velocity-y)
+    :initform 5)
    (width
     :accessor image-object-width
-    :initform 0
-    :initarg :width)
+    :initform 64)
    (height
     :accessor image-object-height
-    :initform 0
-    :initarg :height)
+    :initform 64)
    (x-cell-count
     :documentation "take 1 from actual number"
     :accessor image-object-x-cell-count
-    :initform 0
-    :initarg :x-cell-count)
+    :initform (make-hash-table :test #'equal))
    (y-cell-count
     :documentation "take 1 from actual number"
     :accessor image-object-y-cell-count
-    :initform 0
-    :initarg :y-cell-count)
+    :initform 0)
    (total-cell-count
     :documentation "take 1 from actual number"
     :accessor image-object-total-cell-count
-    :initform 0
-    :initarg :total-cell-count)
+    :initform (make-hash-table :test #'equal))
    (sprite-sheet
     :accessor image-object-sprite-sheet
     :initform nil
@@ -234,8 +215,24 @@
     :initform nil
     :initarg :attack1-right)))
 
+(defmethod set-x-cell-count ((piyo piyo))
+  (with-slots (x-cell-count) piyo
+    (setf (gethash "piyo-standing-left" x-cell-count) 0)
+    (setf (gethash "piyo-standing-right" x-cell-count) 0)
+    (setf (gethash "piyo-walking-left" x-cell-count) 1)
+    (setf (gethash "piyo-walking-right" x-cell-count) 1)))
+
+(defmethod set-total-cell-count ((piyo piyo))
+  (with-slots (total-cell-count) piyo
+    (setf (gethash "piyo-standing-left" total-cell-count) 0)
+    (setf (gethash "piyo-standing-right" total-cell-count) 0)
+    (setf (gethash "piyo-walking-left" total-cell-count) 1)
+    (setf (gethash "piyo-walking-right" total-cell-count) 1)))
+
 (defmethod initialize-instance :after ((piyo piyo) &rest initargs)
-  (with-slots (collision-x
+  (with-slots (position-x
+	       position-y
+	       collision-x
 	       collision-y
 	       collision-width
 	       collision-height
@@ -244,6 +241,10 @@
 	       attack-collision-width
 	       attack-collision-height)
       piyo
+    (setf collision-x (+ position-x collision-x))
+    (setf collision-y (+ position-y collision-y))
+    (set-x-cell-count piyo)
+    (set-total-cell-count piyo)
     (setf attack-collision-x collision-x)
     (setf attack-collision-y collision-y)
     (setf attack-collision-width collision-width)

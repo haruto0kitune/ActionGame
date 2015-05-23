@@ -1,4 +1,4 @@
-(in-package :key-state)
+(in-package :game)
 
 ;; generic function
 (defgeneric update-key-state (key key-press key-state)

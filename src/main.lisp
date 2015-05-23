@@ -1,11 +1,5 @@
 (in-package :game)
 
-(defkeystate key-state
-  (right :sdl-key-right)
-  (left :sdl-key-left)
-  (up :sdl-key-up)
-  (x :sdl-key-x))
-
 ;;;; debug
 (declaim (optimize (debug 3) (safety 3)
                    (speed 0) (space 0) (compilation-speed 0)))
@@ -108,20 +102,6 @@
 ;; actual cell - 1
 (defparameter *cell* (make-hash-table :test #'equal))
 (setf (gethash "block" *cell*) 2)
-(setf (gethash "standing-left" *cell*) 11)
-(setf (gethash "standing-right" *cell*) 11)
-(setf (gethash "running-left" *cell*) 7)
-(setf (gethash "running-right" *cell*) 7)
-(setf (gethash "jumping-left" *cell*) 3)
-(setf (gethash "jumping-right" *cell*) 3)
-(setf (gethash "fox-girl-damage-motion1-left" *cell*) 2)
-(setf (gethash "fox-girl-damage-motion1-right" *cell*) 2)
-(setf (gethash "fox-girl-down-motion-left" *cell*) 8)
-(setf (gethash "fox-girl-down-motion-right" *cell*) 8)
-(setf (gethash "piyo-standing-left" *cell*) 0)
-(setf (gethash "piyo-standing-right" *cell*) 0)
-(setf (gethash "piyo-walking-left" *cell*) 1)
-(setf (gethash "piyo-walking-right" *cell*) 1)
 
 ;; filename
 (defparameter *background* "../pixel_animation/background.png")
@@ -273,64 +253,31 @@
 (defun generate-instance ()
   (setf *player* (make-instance 'player
 				:filename *filename*
-				:collision-x 643
-				:collision-y 15
-				:collision-width 39
-				:collision-height 113
-				:position-x 600
-				:position-y 0
-				:velocity-x 10
-				:velocity-y 10
-				:width 128
-				:height 128
-				:x-cell-count *cell*
-				:y-cell-count 0
-				:total-cell-count *cell*
+;				:collision-x 643
+;				:collision-y 15
+;				:collision-width 39
+;				:collision-height 113
+				:position-x 200
+				:position-y 300
+;				:velocity-x 10
+;				:velocity-y 10
+;				:width 128
+;				:height 128
 				:duration *duration*
 				:direction "left"
 				:draw-flag t))
   (setf *piyo* (make-instance 'piyo
 			      :filename *filename*
-			      :collision-x 109
-			      :collision-y 13
-			      :collision-width 40
-			      :collision-height 40
-			      :damage-collision-x 109
-			      :damage-collision-y 13
-			      :damage-collision-width 40
-			      :damage-collision-height 40
 			      :position-x 100			      
 			      :position-y 0
-			      :velocity-x 4			      
-			      :velocity-y 8
-			      :width 64
-			      :height 64
-			      :x-cell-count *cell*
-			      :y-cell-count 0
-			      :total-cell-count *cell*
 			      :duration *duration*
 			      :direction "right"
 			      :action-name "piyo-walking-right"
 			      :draw-flag t))
   (setf *piyo2* (make-instance 'piyo
 			      :filename *filename*
-			      :collision-x 209
-			      :collision-y 13
-			      :collision-width 40
-			      :collision-height 40
-			      :damage-collision-x 209
-			      :damage-collision-y 13
-			      :damage-collision-width 40
-			      :damage-collision-height 40
 			      :position-x 200			      
 			      :position-y 0
-			      :velocity-x 4			      
-			      :velocity-y 8
-			      :width 64
-			      :height 64
-			      :x-cell-count *cell*
-			      :y-cell-count 0
-			      :total-cell-count *cell*
 			      :duration *duration*
 			      :direction "right"
 			      :action-name "piyo-walking-right"
@@ -349,19 +296,8 @@
        (loop for x from 0 to (- *block-row* 1) by 1 collect
 	    (setf (aref *block-instance-array* y x)
 		  (make-instance 'blocks
-				 :filename "../pixel_animation/test1.png"
-				 :collision-x (* x *block-width*) 
-				 :collision-y (* y *block-height*) 
-				 :collision-width *block-width*
-				 :collision-height *block-height*
 				 :position-x (* x *block-width*) 
 				 :position-y (* y *block-width*) 
-				 :width *block-width*
-				 :height *block-height*
-				 :x-cell-count 2
-				 :y-cell-count 0
-				 :total-cell-count 2
-				 :duration 0
 				 :draw-flag (aref *block-array* y x)
 				 :id (aref *block-array* y x))))))
 
@@ -615,6 +551,9 @@
 	   (setf (image-object-action-name *player*) "fox-girl-down-motion-right")))
     (sdl:draw-surface-at-* *gameover* 0 0)))
     
+
+;(defun reset ()
+  
 
 (defun main ()
   (sdl:with-init ()
