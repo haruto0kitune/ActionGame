@@ -2,6 +2,7 @@
 ;;;; piyo class
 ;;;;
 
+<<<<<<< HEAD
 (in-package :cl-user)
 (defpackage piyo-class
   (:use :cl)
@@ -61,6 +62,9 @@
 	   :attack1-left
 	   :attack1-right))
 (in-package :piyo-class)
+=======
+(in-package :game)
+>>>>>>> hotfix
 
 ;(load "sprite-sheet-class.lisp" :external-format :utf-8)
 

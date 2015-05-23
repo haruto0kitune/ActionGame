@@ -1,7 +1,3 @@
-(in-package :cl-user)
-(defpackage key-state
-  (:use :cl)
-  (:export :key-state :defkeystate :update-key-state))
 (in-package :key-state)
 
 ;; generic function

@@ -1,7 +1,3 @@
-(in-package :cl-user)
-(defpackage load-csv
-  (:use :cl)
-  (:export :load-csv))
 (in-package :load-csv)
 
 (defun load-csv (filename)

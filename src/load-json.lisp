@@ -1,7 +1,3 @@
-(in-package :cl-user)
-(defpackage load-json
-  (:use :cl)
-  (:export :load-json))
 (in-package :load-json)	    
 
 ;(defstruct sprite-sheet-data

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 (in-package :cl-user)
 (defpackage block-class
   (:use :cl)
   (:export :blocks))
 (in-package :block-class)
 
+=======
+(in-package :game)
+	    
+>>>>>>> hotfix
 (defclass blocks ()
   ((filename
     :accessor image-object-filename

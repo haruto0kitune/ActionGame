@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 (in-package :cl-user)
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (unless (find-package :game)    
@@ -23,6 +24,16 @@
       (:export :main))))
 (in-package :game)
 
+=======
+(in-package :game)
+
+(defkeystate key-state
+  (right :sdl-key-right)
+  (left :sdl-key-left)
+  (up :sdl-key-up)
+  (x :sdl-key-x))
+
+>>>>>>> hotfix
 ;;;; debug
 (declaim (optimize (debug 3) (safety 3)
                    (speed 0) (space 0) (compilation-speed 0)))

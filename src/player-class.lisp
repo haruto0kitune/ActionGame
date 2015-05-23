@@ -2,6 +2,7 @@
 ;;;; player class
 ;;;;
 
+<<<<<<< HEAD
 (in-package :cl-user)
 (defpackage player-class
   (:use :cl)
@@ -69,6 +70,9 @@
 	   :fox-girl-down-motion-left
 	   :fox-girl-down-motion-right))
 (in-package :player-class)
+=======
+(in-package :game)
+>>>>>>> hotfix
 
 ;(load "sprite-sheet-class.lisp" :external-format :utf-8)
 

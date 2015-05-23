@@ -10,6 +10,7 @@
   :author "Sakurai Haruto"
   :components ((:module "src"
 			:components
+<<<<<<< HEAD
 			((:file "util")
 			 (:file "load-csv")
 			 (:file "class")
@@ -26,10 +27,30 @@
 			 (:file "main" :depends-on ("util"
 						    "class"
 						    "generic-function"
+=======
+			((:file "package")
+			 (:file "util")
+			 (:file "key-state")
+			 (:file "load-csv")
+			 (:file "sprite-sheet-class")
+			 (:file "player-class")
+			 (:file "block-class")
+			 (:file "collision")
+			 (:file "gravity")
+			 (:file "load-json")
+			 (:file "piyo-class")
+			 (:file "main" :depends-on ("key-state"
+>>>>>>> hotfix
 						    "load-csv"
 						    "collision"
 						    "gravity"
+<<<<<<< HEAD
 						    "load-json"))))))
+=======
+						    "load-json"
+						    "piyo-class"))))))
+
+>>>>>>> hotfix
 				
 				
 				

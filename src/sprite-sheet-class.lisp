@@ -26,11 +26,15 @@
 ;;;; if don't generate-sprite-sheet, draw-sprite fail.
 ;;;;
 
+<<<<<<< HEAD
 (in-package :cl-user)
 (defpackage sprite-sheet-class
   (:use :cl)
   (:export :image-object))
 (in-package :sprite-sheet-class)
+=======
+(in-package :game)
+>>>>>>> hotfix
 
 (defgeneric generate-sprite-sheet (image-object))
 ;(defgeneric draw-sprite (image-object))
