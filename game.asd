@@ -10,29 +10,26 @@
   :author "Sakurai Haruto"
   :components ((:module "src"
 			:components
-			((:file "key-state")
+			((:file "util")
 			 (:file "load-csv")
-			 (:file "sprite-sheet-class")
-			 (:file "player-class" :depends-on ("sprite-sheet-class"))
-			 (:file "block-class")
-			 (:file "collision")
-			 (:file "gravity")
+			 (:file "class")
+;			 (:file "sprite-sheet-class")
+;			 (:file "player-class" :depends-on ("sprite-sheet-class"))
+;			 (:file "block-class")
+			 (:file "collision" :depends-on ("class"
+							 "util"))
+			 (:file "gravity" :depends-on ("util"))
 			 (:file "load-json")
-			 (:file "piyo-class" :depends-on ("sprite-sheet-class"))
-			 (:file "generic-function" :depends-on ("sprite-sheet-class"
-								"player-class"
-								"piyo-class"
-								"key-state"
-								"block-class"))
-			 (:file "main" :depends-on ("key-state"
+;			 (:file "piyo-class" :depends-on ("sprite-sheet-class"))
+			 (:file "generic-function" :depends-on ("class"
+								"util"))
+			 (:file "main" :depends-on ("util"
+						    "class"
+						    "generic-function"
 						    "load-csv"
-						    "sprite-sheet-class"
-						    "player-class"
-						    "block-class"
 						    "collision"
 						    "gravity"
-						    "load-json"
-						    "piyo-class"))))))
+						    "load-json"))))))
 				
 				
 				
