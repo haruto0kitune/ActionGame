@@ -12,14 +12,6 @@
   (:use :cl)
   (:export :key-state :defkeystate :update-key-state))
 
-(defpackage collision
-  (:use :cl)
-  (:export :collide :bottom-collide))
-
-(defpackage gravity
-  (:use :cl)
-  (:export generate-free-fall))
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (unless (find-package :game)    
     (defpackage game
