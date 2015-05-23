@@ -6,7 +6,6 @@
   (up :sdl-key-up)
   (x :sdl-key-x))
 
-
 ;;;; debug
 (declaim (optimize (debug 3) (safety 3)
                    (speed 0) (space 0) (compilation-speed 0)))
