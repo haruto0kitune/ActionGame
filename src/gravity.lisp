@@ -1,8 +1,4 @@
-(in-package :cl-user)
-(defpackage gravity
-  (:use :cl)
-  (:export :generate-free-fall))
-(in-package :gravity)
+(in-package :game)
 
 (defun generate-free-fall ()
   (let ((g 0) (temp-g 0))

@@ -1,39 +1,3 @@
-(in-package :cl-user)
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (unless (find-package :game)    
-    (defpackage game
-      (:use :cl :key-state)
-      (:import-from :key-state
-		    :key-state
-		    :update-key-state
-		    :defkeystate)
-      (:import-from :load-csv
-		    :load-csv)
-      (:import-from :sprite-sheet-class)
-      (:import-from :player-class
-		    :player
-		    :update
-		    :draw-sprite
-		    :move
-		    :jump
-		    :hp)  
-      (:import-from :block-class
-		    :blocks
-		    :draw-sprite)
-      (:import-from :collision
-		    :collide
-		    :bottom-collide)
-      (:import-from :gravity
-		    :generate-free-fall)
-      (:import-from :load-json
-		    :load-json)
-      (:import-from :piyo-class
-		    :piyo
-		    :initialize-piyo
-		    :update
-		    :move
-		    :draw-sprite)
-      (:export :main))))
 (in-package :game)
 
 (defkeystate key-state
@@ -42,11 +6,6 @@
   (up :sdl-key-up)
   (x :sdl-key-x))
 
-(defmacro -= (n1 n2)
-  `(setf ,n1 (- ,n1 ,n2)))
-
-(defmacro += (n1 n2)
-  `(setf ,n1 (+ ,n1 ,n2)))
 
 ;;;; debug
 (declaim (optimize (debug 3) (safety 3)

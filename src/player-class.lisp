@@ -2,12 +2,7 @@
 ;;;; player class
 ;;;;
 
-(in-package :cl-user)
-(defpackage player-class
-  (:use :cl)
-  (:import-from :sprite-sheet-class)
-  (:export :player :update :draw-sprite :move :jump :hp))
-(in-package :player-class)
+(in-package :game)
 
 ;(load "sprite-sheet-class.lisp" :external-format :utf-8)
 

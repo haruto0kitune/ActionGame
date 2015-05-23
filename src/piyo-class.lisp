@@ -2,12 +2,7 @@
 ;;;; piyo class
 ;;;;
 
-(in-package :cl-user)
-(defpackage piyo-class
-  (:use :cl)
-  (:import-from :sprite-sheet-class)
-  (:export :piyo :initialize-piyo :update :move :draw-sprite))
-(in-package :piyo-class)
+(in-package :game)
 
 ;(load "sprite-sheet-class.lisp" :external-format :utf-8)
 

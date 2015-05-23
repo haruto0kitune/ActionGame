@@ -1,9 +1,5 @@
-(in-package :cl-user)
-(defpackage block-class
-  (:use :cl)
-  (:export :blocks :draw-sprite))
-(in-package :block-class)
-
+(in-package :game)
+	    
 (defclass blocks ()
   ((filename
     :accessor image-object-filename
