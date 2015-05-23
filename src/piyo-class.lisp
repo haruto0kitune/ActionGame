@@ -2,69 +2,7 @@
 ;;;; piyo class
 ;;;;
 
-<<<<<<< HEAD
-(in-package :cl-user)
-(defpackage piyo-class
-  (:use :cl)
-  (:import-from :sprite-sheet-class)
-  (:export :piyo
-	   :hp
-	   :filename
-	   :collision-x
-	   :collision-y
-	   :collision-width
-	   :collision-height
-	   :attack-collision-x
-	   :attack-collision-y
-	   :attack-collision-width
-	   :attack-collision-height
-	   :damage-collision-x
-	   :damage-collision-y
-	   :damage-collision-width
-	   :damage-collision-height
-	   :position-x
-	   :position-y
-	   :velocity-x
-	   :velocity-y
-	   :width
-	   :height
-	   :x-cell-count
-	   :y-cell-count
-	   :total-cell-count
-	   :sprite-sheet
-	   :current-cell
-	   :standing-left-current-cell
-	   :standing-right-current-cell
-	   :walking-left-current-cell
-	   :walking-right-current-cell
-	   :duration
-	   :frame-counter
-	   :cx-minus-px
-	   :cy-minus-py
-	   :direction
-	   :jump-power
-	   :action-name
-	   :var-jump
-	   :draw-flag
-	   :jump-flag
-	   :ground-flag
-	   :air-flag
-	   :top-collision-flag
-	   :bottom-collision-flag
-	   :left-collision-flag
-	   :right-collision-flag
-	   :standing-left
-	   :standing-right
-	   :walking-left
-	   :walking-right
-	   :jumping-left
-	   :jumping-right
-	   :attack1-left
-	   :attack1-right))
-(in-package :piyo-class)
-=======
 (in-package :game)
->>>>>>> hotfix
 
 ;(load "sprite-sheet-class.lisp" :external-format :utf-8)
 
@@ -79,6 +17,10 @@
     :accessor image-object-hp
     :initform 1
     :initarg :hp)
+   (frames
+    :accessor image-object-frames
+    :initform nil
+    :initarg :frames)
    (filename
     :documentation "hash table"
     :accessor image-object-filename
@@ -291,3 +233,280 @@
     :accessor image-object-attack1-right
     :initform nil
     :initarg :attack1-right)))
+
+(defmethod initialize-instance :after ((piyo piyo) &rest initargs)
+  (with-slots (collision-x
+	       collision-y
+	       collision-width
+	       collision-height
+	       attack-collision-x
+	       attack-collision-y
+	       attack-collision-width
+	       attack-collision-height)
+      piyo
+    (setf attack-collision-x collision-x)
+    (setf attack-collision-y collision-y)
+    (setf attack-collision-width collision-width)
+    (setf attack-collision-height collision-height)
+    (initialize-piyo piyo)))
+
+(defmethod initialize-piyo ((piyo piyo))  
+  (with-slots (position-x
+	       position-y
+	       collision-x
+	       collision-y
+	       cx-minus-px
+	       cy-minus-py
+	       var-jump)
+      piyo
+    (generate-sprite-sheet piyo)
+    (setf var-jump (generate-jump piyo))
+    (setf cx-minus-px (- collision-x position-x))
+    (setf cy-minus-py (- collision-y position-y))))
+
+(defmethod update ((piyo piyo))
+  (with-slots (collision-x
+	       collision-y
+	       attack-collision-x
+	       attack-collision-y
+	       damage-collision-x
+      	       damage-collision-y)
+      piyo
+    (setf attack-collision-x collision-x)
+    (setf attack-collision-y collision-y)
+    (setf damage-collision-x collision-x)
+    (setf damage-collision-y collision-y)))
+
+(defmethod move ((piyo piyo) direction-string)
+  (cond ((string= direction-string "left")
+	 (move-left piyo))
+	((string= direction-string "right")
+	 (move-right piyo))))
+
+(defmethod move-left ((piyo piyo))
+  (with-slots (position-x
+	       collision-x
+	       damage-collision-x
+	       velocity-x
+	       direction)
+      piyo
+    (setf direction "left")
+    (-= position-x velocity-x)
+    (-= collision-x velocity-x)
+    (-= damage-collision-x velocity-x)))
+
+(defmethod move-right ((piyo piyo))
+  (with-slots (position-x
+	       collision-x
+	       damage-collision-x
+	       velocity-x
+	       direction)
+      piyo
+    (setf direction "right")
+    (+= position-x velocity-x)
+    (+= collision-x velocity-x)
+    (+= damage-collision-x velocity-x)))
+	   
+(defmethod generate-jump ((piyo piyo))
+  (with-slots (jump-power jump-flag) piyo
+    (let* ((start-jump-power jump-power)
+	   (force jump-power)
+	   (prev-y 0)
+	   (temp-y 0)) 
+      (lambda (&optional reset)
+	(progn
+	  (if (eq reset t)
+	      (setf force start-jump-power))
+	  (if (eq jump-flag t)
+	      (progn		
+		(setf prev-y temp-y)
+		(-= temp-y (floor force))
+		(-= (image-object-position-y piyo) (floor force))
+		(-= (image-object-collision-y piyo) (floor force))		
+		(if (not (<= (floor force) 0))
+		    (-= force 1.5)
+		    (progn
+		      (setf jump-flag nil)
+		      (setf force start-jump-power))))))))))
+
+(defmethod jump ((piyo piyo))
+  (with-slots (var-jump) piyo
+      (funcall var-jump)))
+
+(defmethod set-standing-left ((piyo piyo))
+  (with-slots (filename
+	       width
+	       height
+	       x-cell-count
+	       y-cell-count
+	       standing-left)
+      piyo
+    (let ((sprite-cells nil))
+      (setf standing-left (sdl:load-image (gethash "piyo-standing-left" filename)
+					  :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "piyo-standing-left"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells standing-left) sprite-cells))))
+
+(defmethod set-standing-right ((piyo piyo))
+  (with-slots (filename
+	       width
+	       height
+	       x-cell-count
+	       y-cell-count
+	       standing-right)
+      piyo
+    (let ((sprite-cells nil))
+      (setf standing-right (sdl:load-image (gethash "piyo-standing-right" filename)
+					  :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "piyo-standing-right"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells standing-right) sprite-cells))))
+
+(defmethod set-walking-left ((piyo piyo))
+  (with-slots (filename
+	       width
+	       height
+	       x-cell-count
+	       y-cell-count
+	       walking-left)
+      piyo
+    (let ((sprite-cells nil))
+      (setf walking-left (sdl:load-image (gethash "piyo-walking-left" filename)
+					  :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "piyo-walking-left"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells walking-left) sprite-cells))))
+
+(defmethod set-walking-right ((piyo piyo))
+  (with-slots (filename
+	       width
+	       height
+	       x-cell-count
+	       y-cell-count
+	       walking-right)
+      piyo
+    (let ((sprite-cells nil))
+      (setf walking-right (sdl:load-image (gethash "piyo-walking-right" filename)
+					  :color-key sdl:*black*))
+      (setf sprite-cells
+	    (loop for y from 0 to (* height y-cell-count) by height
+	       append (loop for x from 0 to (* width
+					       (gethash "piyo-walking-right"
+							x-cell-count)) by width
+			 collect (list x y width height))))
+      (setf (sdl:cells walking-right) sprite-cells))))
+
+(defmethod generate-sprite-sheet ((piyo piyo))
+  (set-standing-left piyo)
+  (set-standing-right piyo)
+  (set-walking-left piyo)
+  (set-walking-right piyo))
+
+(defmethod piyo-standing-left ((piyo piyo))
+  (with-slots
+	(position-x
+	 position-y
+	 standing-left
+	 standing-left-current-cell
+	 total-cell-count
+	 duration
+	 frame-counter)
+      piyo
+    (sdl:draw-surface-at-* standing-left
+			   position-x
+			   position-y
+			   :cell standing-left-current-cell)
+    (incf frame-counter)
+    (when (> frame-counter (gethash "piyo-standing-left" duration))
+      (incf standing-left-current-cell)
+      (setf frame-counter 0)
+      (if (> standing-left-current-cell (gethash "piyo-standing-left"
+						 total-cell-count))
+	  (setf standing-left-current-cell 0)))))
+
+(defmethod piyo-standing-right ((piyo piyo))
+  (with-slots
+	(position-x
+	 position-y
+	 standing-right
+	 standing-right-current-cell
+	 total-cell-count
+	 duration
+	 frame-counter)
+      piyo
+    (sdl:draw-surface-at-* standing-right
+			   position-x
+			   position-y
+			   :cell standing-right-current-cell)
+    (incf frame-counter)
+    (when (> frame-counter (gethash "piyo-standing-right" duration))
+      (incf standing-right-current-cell)
+      (setf frame-counter 0)
+      (if (> standing-right-current-cell (gethash "piyo-standing-right"
+						  total-cell-count))
+	  (setf standing-right-current-cell 0)))))
+
+(defmethod piyo-walking-left ((piyo piyo))
+  (with-slots
+	(position-x
+	 position-y
+	 walking-left
+	 walking-left-current-cell
+	 total-cell-count
+	 duration
+	 frame-counter)
+      piyo
+    (sdl:draw-surface-at-* walking-left
+			   position-x
+			   position-y
+			   :cell walking-left-current-cell)
+    (incf frame-counter)
+    (when (> frame-counter (gethash "piyo-walking-left" duration))
+      (incf walking-left-current-cell)
+      (setf frame-counter 0)
+      (if (> walking-left-current-cell (gethash "piyo-walking-left"
+						 total-cell-count))
+	  (setf walking-left-current-cell 0)))))
+
+(defmethod piyo-walking-right ((piyo piyo))
+  (with-slots
+	(position-x
+	 position-y
+	 walking-right
+	 walking-right-current-cell
+	 total-cell-count
+	 duration
+	 frame-counter)
+      piyo
+    (sdl:draw-surface-at-* walking-right
+			   position-x
+			   position-y
+			   :cell walking-right-current-cell)
+    (incf frame-counter)
+    (when (> frame-counter (gethash "piyo-walking-right" duration))
+      (incf walking-right-current-cell)
+      (setf frame-counter 0)
+      (if (> walking-right-current-cell (gethash "piyo-walking-right"
+						total-cell-count))
+	  (setf walking-right-current-cell 0)))))
+
+(defmethod draw-sprite ((piyo piyo))
+  (with-slots (action-name) piyo
+    (cond ((string= action-name "piyo-standing-left") (piyo-standing-left piyo))
+	  ((string= action-name "piyo-standing-right") (piyo-standing-right piyo))
+	  ((string= action-name "piyo-walking-left") (piyo-walking-left piyo))
+	  ((string= action-name "piyo-walking-right") (piyo-walking-right piyo)))))
+	  
