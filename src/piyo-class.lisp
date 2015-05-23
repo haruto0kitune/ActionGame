@@ -20,8 +20,7 @@
    (filename
     :documentation "hash table"
     :accessor image-object-filename
-    :initform nil
-    :initarg :filename)
+    :initform (make-hash-table :test #'equal))
    (collision-x
     :accessor image-object-collision-x
     :initform 9)
@@ -209,6 +208,17 @@
     :initform nil
     :initarg :attack1-right)))
 
+(defmethod set-filename ((piyo piyo))
+  (with-slots (filename) piyo
+    (setf (gethash "piyo-standing-left" filename)
+	  "../pixel_animation/enemy/enemy1_standing1_left.png")
+    (setf (gethash "piyo-standing-right" filename)
+	  "../pixel_animation/enemy/enemy1_standing1_right.png")
+    (setf (gethash "piyo-walking-left" filename)
+	  "../pixel_animation/enemy/enemy1_walk_left.png")
+    (setf (gethash "piyo-walking-right" filename)
+	  "../pixel_animation/enemy/enemy1_walk_right.png")))
+
 (defmethod set-duration ((piyo piyo))
   (with-slots (duration) piyo
     (setf (gethash "piyo-standing-left" duration) 1)
@@ -248,6 +258,7 @@
 	   (setf action-name "piyo-standing-left"))
 	  ((string= direction "right")
 	   (setf action-name "piyo-standing-right")))
+    (set-filename piyo)
     (set-duration piyo)
     (setf collision-x (+ position-x collision-x))
     (setf collision-y (+ position-y collision-y))

@@ -15,8 +15,7 @@
    (filename
     :documentation "hash table"
     :accessor image-object-filename
-    :initform nil
-    :initarg :filename)
+    :initform (make-hash-table :test #'equal))
    (collision-x
     :accessor image-object-collision-x
     :initform 43)
@@ -259,6 +258,29 @@
     :initform nil
     :initarg :fox-girl-down-motion-right)))
 
+(defmethod set-filename ((player player))
+  (with-slots (filename) player
+    (setf (gethash "standing-left" filename)
+	  "../pixel_animation/player_standing_left.png")
+    (setf (gethash "standing-right" filename)
+	  "../pixel_animation/player_standing_right.png")
+    (setf (gethash "running-left" filename)
+	  "../pixel_animation/player_running_left.png")
+    (setf (gethash "running-right" filename)
+	  "../pixel_animation/player_running_right.png")
+    (setf (gethash "jumping-left" filename)
+	  "../pixel_animation/player_jumping_left.png")
+    (setf (gethash "jumping-right" filename)
+	  "../pixel_animation/player_jumping_right.png")
+    (setf (gethash "fox-girl-damage-motion1-left" filename)
+	  "../pixel_animation/fox_girl_damage_motion1_left.png")
+    (setf (gethash "fox-girl-damage-motion1-right" filename)
+	  "../pixel_animation/fox_girl_damage_motion1_right.png")
+    (setf (gethash "fox-girl-down-motion-left" filename)
+	  "../pixel_animation/fox_girl_down_motion_left2.png")
+    (setf (gethash "fox-girl-down-motion-right" filename)
+	  "../pixel_animation/fox_girl_down_motion_right2.png")))
+
 (defmethod update ((player player))
   (with-slots (collision-x
 	       collision-y
@@ -294,6 +316,7 @@
 	   (setf action-name "standing-left"))
 	  ((string= direction "right")
 	   (setf action-name "standing-right")))
+    (set-filename player)
     (set-x-cell-count player)
     (set-total-cell-count player)
     (setf collision-x (+ position-x collision-x))

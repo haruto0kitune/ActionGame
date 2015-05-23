@@ -4,76 +4,12 @@
 (declaim (optimize (debug 3) (safety 3)
                    (speed 0) (space 0) (compilation-speed 0)))
 
-;;;; attention
-;;;;
-;;;; a large scale refactoring
-;;;;
-
-;;;; temp todo memo
-;;;;
-;;;; 
-;;;;
-
-;;;; next todo
-;;;;
-;;;; implement the enemy.
-;;;;
-
 ;; gameover
 (defparameter *gameover-flag* nil)
 (defparameter *gameover* nil)
 
 ;; debug flag
 (defparameter *debug* t)
-
-;; hash table for action-name
-(defparameter *action-name* (make-hash-table :test #'equal))
-
-;; hash table for filename
-(defparameter *filename* (make-hash-table :test #'equal))
-(setf (gethash "standing-left" *filename*)
-      "../pixel_animation/player_standing_left.png")
-(setf (gethash "standing-right" *filename*)
-      "../pixel_animation/player_standing_right.png")
-;(setf (gethash "walking-left" *filename*)
-;     "../pixel_animation/player_walking_left.png")
-;(setf (gethash "walking-right" *filename*)
-;      "../pixel_animation/player_walking_right.png")
-(setf (gethash "running-left" *filename*)
-      "../pixel_animation/player_running_left.png")
-(setf (gethash "running-right" *filename*)
-      "../pixel_animation/player_running_right.png")
-(setf (gethash "jumping-left" *filename*)
-      "../pixel_animation/player_jumping_left.png")
-(setf (gethash "jumping-right" *filename*)
-      "../pixel_animation/player_jumping_right.png")
-(setf (gethash "fox-girl-damage-motion1-left" *filename*)
-      "../pixel_animation/fox_girl_damage_motion1_left.png")
-(setf (gethash "fox-girl-damage-motion1-right" *filename*)
-      "../pixel_animation/fox_girl_damage_motion1_right.png")
-(setf (gethash "fox-girl-down-motion-left" *filename*)
-      "../pixel_animation/fox_girl_down_motion_left2.png")
-(setf (gethash "fox-girl-down-motion-right" *filename*)
-      "../pixel_animation/fox_girl_down_motion_right2.png")
-;;;; enemy
-;;; piyo
-(setf (gethash "piyo-standing-left" *filename*)
-      "../pixel_animation/enemy/enemy1_standing1_left.png")
-(setf (gethash "piyo-standing-right" *filename*)
-      "../pixel_animation/enemy/enemy1_standing1_right.png")
-(setf (gethash "piyo-walking-left" *filename*)
-      "../pixel_animation/enemy/enemy1_walk_left.png")
-(setf (gethash "piyo-walking-right" *filename*)
-      "../pixel_animation/enemy/enemy1_walk_right.png")
-
-;;sprite width height
-(defparameter *sprite-width* 128)
-(defparameter *sprite-height* 128)
-
-;;sprite total cell count
-(defparameter *cells-of-player_standing* 12)
-(defparameter *cells-of-player_dash* 8)
-(defparameter *cells-of-player_jump* 10)
 
 ;; player
 (defvar *player* nil)
@@ -82,25 +18,9 @@
 (defvar *piyo* nil)
 (defvar *piyo2* nil)
 
-;; move
-(defparameter *left-dash* nil)
-(defparameter *right-dash* nil)
-
-;; jump
-(defparameter *player-jump* nil)
-(defparameter *player-jump-left* nil)
-(defparameter *draw-player-jump* nil)
-(defparameter *draw-player-jump-left* nil)
-(defparameter *jump* nil)
-(defparameter *y_temp* 0)
-(defparameter *y_prev* 0)
-(defparameter *F* 20)
-(defparameter *jump-flag* nil)
-(defparameter *jump-right-flag* nil)
-(defparameter *jump-left-flag* nil)
-
 ;; key-state
 (defparameter *current-key* nil)
+(defparameter *current-key-state* (make-instance 'key-state))
 
 ;; background
 (defparameter *background* nil)
@@ -109,12 +29,6 @@
 (defparameter *window-width* 800)
 (defparameter *window-height* 600)
 (defparameter *window-center-x* (/ *window-width* 2))
-
-;; other
-(defparameter *standing* nil)
-
-;; key state
-(defparameter *current-key-state* (make-instance 'key-state))
 
 ;; stage
 (defparameter *scroll-x* 10)
@@ -206,24 +120,19 @@
 
 (defun generate-instance ()
   (setf *player* (make-instance 'player
-				:filename *filename*
 				:position-x 200
 				:position-y 300
 				:direction "left"
 				:draw-flag t))
   (setf *piyo* (make-instance 'piyo
-			      :filename *filename*
 			      :position-x 100			      
 			      :position-y 0
 			      :direction "right"
-;			      :action-name "piyo-walking-right"
 			      :draw-flag t))
   (setf *piyo2* (make-instance 'piyo
-			      :filename *filename*
 			      :position-x 200			      
 			      :position-y 0
 			      :direction "right"
-;			      :action-name "piyo-walking-right"
 			      :draw-flag t))
   (setf *background*
 	(make-instance 'image-object
