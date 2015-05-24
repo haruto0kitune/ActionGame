@@ -120,27 +120,18 @@
 
 (defun generate-instance ()
   (setf *player* (make-instance 'player
-				:position-x 200
-				:position-y 300
-				:direction "left"
-				:draw-flag t))
+				:x 200
+				:y 300
+				:direction "left"))
   (setf *piyo* (make-instance 'piyo
 			      :position-x 100			      
 			      :position-y 0
-			      :direction "right"
-			      :draw-flag t))
+			      :direction "right"))
   (setf *piyo2* (make-instance 'piyo
 			      :position-x 200			      
 			      :position-y 0
-			      :direction "right"
-			      :draw-flag t))
-  (setf *background*
-	(make-instance 'image-object
-		       :filename "../pixel_animation/background.png"
-		       :position-x 0
-		       :position-y 0
-		       :width 800
-		       :height 600))
+			      :direction "right"))
+  (setf *background* (make-instance 'background)) 
   ;;
   ;; generate block instance
   ;;
@@ -396,7 +387,9 @@
     nil))  
 
 (defun gameover ()
-  (when (<= (image-object-hp *player*) 0)
+  (when (or (<= (image-object-hp *player*) 0)
+	    (>= (image-object-position-y *player*) 600))
+    (setf *gameover-flag* t)
     (sdl:clear-display sdl:*black*)	
     (check-jump-flag)
     (free-fall)
@@ -415,7 +408,9 @@
     (sdl:update-display)))
 
 (defun mainloop ()
-  (when (> (image-object-hp *player*) 0)
+  (when (and (> (image-object-hp *player*) 0)
+	     (< (image-object-position-y *player*) 600))
+    (setf *gameover-flag* nil)
     (sdl:clear-display sdl:*black*)
     (key-event2 *player* *current-key-state*)
     (check-jump-flag)
@@ -427,7 +422,8 @@
     (draw)
     (sdl:update-display)))
 
-;(defun reset ()
+(defun reset ()
+  (reinitialize-instance *player*))
 
 (defun main ()
   (sdl:with-init ()
@@ -445,7 +441,10 @@
 		       (when (sdl:key= key :sdl-key-d)
 			 (if (eq *debug* nil)
 			     (setf *debug* t)
-			     (setf *debug* nil)))		       
+			     (setf *debug* nil)))
+		       (when (sdl:key= key :sdl-key-r)
+			 (if (eq *gameover-flag* t)
+			     (reset)))
 		       (update-key-state key t *current-key-state*))
       (:key-up-event (:key key)
 		     (update-key-state key nil *current-key-state*))

@@ -4,14 +4,11 @@
 
 (in-package :game)
 
-;(load "sprite-sheet-class.lisp" :external-format :utf-8)
-
 (defclass player ()
   ((hp
     :documentation "hit point"
     :accessor image-object-hp
-    :initform 1
-    :initarg :hp)
+    :initform 1)
    (filename
     :documentation "hash table"
     :accessor image-object-filename
@@ -43,11 +40,11 @@
    (position-x
     :accessor image-object-position-x
     :initform 0
-    :initarg :position-x)
+    :initarg :x)
    (position-y
     :accessor image-object-position-y
     :initform 0
-    :initarg :position-y)
+    :initarg :y)
    (velocity-x
     :accessor image-object-velocity-x
     :initform 10)
@@ -154,8 +151,7 @@
     :initform nil)
    (draw-flag
     :accessor image-object-draw-flag
-    :initform nil
-    :initarg :draw-flag)
+    :initform t)
    (jump-flag
     :accessor image-object-jump-flag
     :initform nil)
@@ -257,6 +253,29 @@
     :accessor image-object-fox-girl-down-motion-right
     :initform nil
     :initarg :fox-girl-down-motion-right)))
+
+(defmethod reinitialize-instance :after ((player player) &rest initargs)
+  (with-slots (hp
+	       position-x
+	       position-y
+	       collision-x
+	       collision-y
+	       damage-collision-x
+	       damage-collision-y
+	       direction
+	       fox-girl-down-motion-left-current-cell
+	       fox-girl-down-motion-right-current-cell)
+      player
+    (setf hp 1)
+    (setf position-x 200)
+    (setf position-y 300)
+    (setf collision-x (+ position-x 43))
+    (setf collision-y (+ position-y 15))
+    (setf damage-collision-x (+ position-x 43))
+    (setf damage-collision-y (+ position-y 15))
+    (setf direction "left")
+    (setf fox-girl-down-motion-left-current-cell 0)
+    (setf fox-girl-down-motion-right-current-cell 0)))
 
 (defmethod set-filename ((player player))
   (with-slots (filename) player

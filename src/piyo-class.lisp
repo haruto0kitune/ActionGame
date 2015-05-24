@@ -13,7 +13,6 @@
 
 (defclass piyo ()
   ((hp
-    :documentation "hit point"
     :accessor image-object-hp
     :initform 1
     :initarg :hp)
@@ -144,8 +143,7 @@
     :initform nil)
    (draw-flag
     :accessor image-object-draw-flag
-    :initform nil
-    :initarg :draw-flag)
+    :initform t)
    (jump-flag
     :accessor image-object-jump-flag
     :initform nil)

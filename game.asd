@@ -14,6 +14,7 @@
 			 (:file "util")
 			 (:file "key-state")
 			 (:file "load-csv")
+			 (:file "background-class")
 			 (:file "sprite-sheet-class" :depends-on ("util"))
 			 (:file "player-class" :depends-on ("util"))
 			 (:file "block-class" :depends-on ("util"))

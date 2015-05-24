@@ -28,26 +28,11 @@
 
 (in-package :game)
 
-(defgeneric generate-sprite-sheet (image-object))
-;(defgeneric draw-sprite (image-object))
-
 (defclass image-object ()
   ((filename
     :accessor image-object-filename
     :initform nil
     :initarg :filename)
-   (collision-x
-    :accessor image-object-collision-x
-    :initform 0)
-   (collision-y
-    :accessor image-object-collision-y
-    :initform 0)
-   (collision-width
-    :accessor image-object-collision-width
-    :initform 0)
-   (collision-height
-    :accessor image-object-collision-height
-    :initform 0)
    (position-x
     :accessor image-object-position-x
     :initform 0
@@ -56,12 +41,6 @@
     :accessor image-object-position-y
     :initform 0
     :initarg :position-y)
-   (velocity-x
-    :accessor image-object-velocity-x
-    :initform 0)
-   (velocity-y
-    :accessor image-object-velocity-y
-    :initform 0)
    (width
     :accessor image-object-width
     :initform 0
@@ -97,8 +76,7 @@
     :initform 0)
    (draw-flag
     :accessor image-object-draw-flag
-    :initform nil
-    :initarg :draw-flag)))
+    :initform t)))
 
 (defmethod initialize-instance :after ((image-object image-object) &rest initargs)
   (generate-sprite-sheet image-object))
