@@ -2,7 +2,13 @@
 
 (defpackage util
   (:use :cl)
-  (:export :-= :+=))
+  (:export :-=
+	   :+=
+	   :rect
+	   :x
+	   :y
+	   :w
+	   :h))
 
 (defpackage load-json
   (:use :cl)

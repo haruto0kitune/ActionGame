@@ -62,21 +62,21 @@
 (defun scroll ()
   "scrolling stage"
   ;; right scroll line
-  (when (> (image-object-collision-x *player*) *scroll-line-right*)
+  (when (> (x (collision *player*)) *scroll-line-right*)
     (loop for y from 0 to (- *block-column* 1) by 1 collect
 	 (loop for x from 0 to (- *block-row* 1) by 1 collect
 	      (progn
 		(-= (image-object-position-x (aref *block-instance-array* y x))
 		    *scroll-x*)
-		(-= (image-object-collision-x (aref *block-instance-array* y x))
+		(-= (x (collision (aref *block-instance-array* y x)))
 		    *scroll-x*))))
     (-= (image-object-position-x *piyo*)
 	*scroll-x*)
-    (-= (image-object-collision-x *piyo*)
+    (-= (x (collision *piyo*))
 	*scroll-x*)
     (-= (image-object-position-x *piyo2*)
 	*scroll-x*)
-    (-= (image-object-collision-x *piyo2*)
+    (-= (x (collision *piyo2*))
 	*scroll-x*)
     (when (<= (image-object-position-x (aref *block-instance-array*
 				       0
@@ -86,24 +86,24 @@
 	  (+= *scroll-array-counter* 1)))
     (format t "~a~%" *scroll-array-counter*)
     (-= (image-object-position-x *player*) *scroll-x*)
-    (-= (image-object-collision-x *player*) *scroll-x*))
+    (-= (x (collision *player*)) *scroll-x*))
   
   ;; left scroll line
-  (when (< (image-object-collision-x *player*) *scroll-line-left*)
+  (when (< (x (collision *player*)) *scroll-line-left*)
     (loop for y from 0 to (- *block-column* 1) by 1 collect
 	 (loop for x from 0 to (- *block-row* 1) by 1 collect
 	      (progn
 	      (+= (image-object-position-x (aref *block-instance-array* y x))
 		  *scroll-x*)
-	      (+= (image-object-collision-x (aref *block-instance-array* y x))
+	      (+= (x (collision (aref *block-instance-array* y x)))
 		  *scroll-x*))))
     (+= (image-object-position-x *piyo*)
 	*scroll-x*)
-    (+= (image-object-collision-x *piyo*)
+    (+= (x (collision *piyo*))
 	*scroll-x*)
     (+= (image-object-position-x *piyo2*)
 	*scroll-x*)
-    (+= (image-object-collision-x *piyo2*)
+    (+= (x (collision *piyo2*))
 	*scroll-x*)
 
     ;;;;
@@ -116,31 +116,20 @@
 	  (-= *scroll-array-counter* 1)))
     ;;;;
     (+= (image-object-position-x *player*) *scroll-x*)
-    (+= (image-object-collision-x *player*) *scroll-x*)))
+    (+= (x (collision *player*)) *scroll-x*)))
 
 (defun generate-instance ()
-  (setf *player* (make-instance 'player
-				:x 200
-				:y 300
-				:direction "left"))
-  (setf *piyo* (make-instance 'piyo
-			      :position-x 100			      
-			      :position-y 0
-			      :direction "right"))
-  (setf *piyo2* (make-instance 'piyo
-			      :position-x 200			      
-			      :position-y 0
-			      :direction "right"))
+  (setf *player* (make-instance 'player	:x 200 :y 300 :direction "left"))
+  (setf *piyo* (make-instance 'piyo :x 100 :y 0 :direction "right"))
+  (setf *piyo2* (make-instance 'piyo :x 200 :y 0 :direction "right"))
   (setf *background* (make-instance 'background)) 
-  ;;
-  ;; generate block instance
-  ;;
+
   (loop for y from 0 to (- *block-column* 1) by 1 collect
        (loop for x from 0 to (- *block-row* 1) by 1 collect
 	    (setf (aref *block-instance-array* y x)
 		  (make-instance 'blocks
-				 :position-x (* x *block-width*) 
-				 :position-y (* y *block-width*) 
+				 :x (* x *block-width*) 
+				 :y (* y *block-width*) 
 				 :draw-flag (aref *block-array* y x)
 				 :id (aref *block-array* y x))))))
 
@@ -236,42 +225,42 @@
     (let ((color (sdl:color :r 255)))
 ;    (defvar color (sdl:color :r 255))
     ;; player
-    (sdl:draw-rectangle-* (image-object-collision-x *player*)
-			  (image-object-collision-y *player*)
-			  (image-object-collision-width *player*)
-			  (image-object-collision-height *player*)
+    (sdl:draw-rectangle-* (x (collision *player*))
+			  (y (collision *player*))
+			  (w (collision *player*))
+			  (h (collision *player*))
 			  :color color)
     ;; piyo
-    (sdl:draw-rectangle-* (image-object-collision-x *piyo*)
-			  (image-object-collision-y *piyo*)
-			  (image-object-collision-width *piyo*)
-			  (image-object-collision-height *piyo*)
+    (sdl:draw-rectangle-* (x (collision *piyo*))
+			  (y (collision *piyo*))
+			  (w (collision *piyo*))
+			  (h (collision *piyo*))
 			  :color color)
-    (sdl:draw-rectangle-* (image-object-collision-x *piyo2*)
-			  (image-object-collision-y *piyo2*)
-			  (image-object-collision-width *piyo2*)
-			  (image-object-collision-height *piyo2*)
+    (sdl:draw-rectangle-* (x (collision *piyo2*))
+			  (y (collision *piyo2*))
+			  (w (collision *piyo2*))
+			  (h (collision *piyo2*))
 			  :color color))))
 
 (defun draw-damage-box ()
   (when (eq *debug* t)
     (let ((color (sdl:color :b 255)))
     ;; player
-    (sdl:draw-rectangle-* (image-object-damage-collision-x *player*)
-			  (image-object-damage-collision-y *player*)
-			  (image-object-damage-collision-width *player*)
-			  (image-object-damage-collision-height *player*)
+    (sdl:draw-rectangle-* (x (damage-collision *player*))
+			  (y (damage-collision *player*))
+			  (w (damage-collision *player*))
+			  (h (damage-collision *player*))
 			  :color color)
     ;; piyo
-    (sdl:draw-rectangle-* (image-object-damage-collision-x *piyo*)
-			  (image-object-damage-collision-y *piyo*)
-			  (image-object-damage-collision-width *piyo*)
-			  (image-object-damage-collision-height *piyo*)
+    (sdl:draw-rectangle-* (x (damage-collision *piyo*))
+			  (y (damage-collision *piyo*))
+			  (w (damage-collision *piyo*))
+			  (h (damage-collision *piyo*))
 			  :color color)
-    (sdl:draw-rectangle-* (image-object-damage-collision-x *piyo2*)
-			  (image-object-damage-collision-y *piyo2*)
-			  (image-object-damage-collision-width *piyo2*)
-			  (image-object-damage-collision-height *piyo2*)
+    (sdl:draw-rectangle-* (x (damage-collision *piyo2*))
+			  (y (damage-collision *piyo2*))
+			  (w (damage-collision *piyo2*))
+			  (h (damage-collision *piyo2*))
 			  :color color))))
   
 (defun block-collision ()
@@ -371,11 +360,11 @@
 		     ,*piyo2*)))
 
 (defun damage-detect (enemy)
-  (if (and (<= (image-object-damage-collision-x *player*)
+  (if (and (<= (x (collision *player*)
 	       (+ (image-object-attack-collision-x enemy)
 		  (image-object-attack-collision-width enemy)))
 	   (<= (image-object-attack-collision-x enemy)
-	       (+ (image-object-damage-collision-x *player*)
+	       (+ (x (collision *player*)
 		  (image-object-damage-collision-width *player*)))
 	   (<= (image-object-damage-collision-y *player*)
 	       (+ (image-object-attack-collision-y enemy)
