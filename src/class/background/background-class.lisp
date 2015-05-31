@@ -14,7 +14,7 @@
   (with-slots (filename image) background	       
     (setf image (sdl:load-image filename))))
 
-(defmethod draw-sprite ((background background))
+(defmethod draw-sprite ((background background) x y)
   (with-slots (x y image) background
     (sdl:draw-surface-at-* image x y)))
 	 

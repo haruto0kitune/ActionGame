@@ -8,26 +8,44 @@
 (defsystem game
   :version "0.1"
   :author "Sakurai Haruto"
-  :components ((:module "src"
-			:components
-			((:file "package")
-			 (:file "util")
-			 (:file "key-state")
-			 (:file "load-csv")
-			 (:file "background-class")
-			 (:file "sprite-sheet-class" :depends-on ("util"))
-			 (:file "player-class" :depends-on ("util"))
-			 (:file "block-class" :depends-on ("util"))
-			 (:file "collision" :depends-on ("util"))
-			 (:file "gravity" :depends-on ("util"))
-			 (:file "load-json")
-			 (:file "piyo-class" :depends-on ("util"))
-			 (:file "main" :depends-on ("util"
-						    "key-state"
-						    "load-csv"
-						    "collision"
-						    "gravity"
-						    "load-json"))))))
+  :components ((:module "src"		
+			:components ((:file "package")
+				     (:file "utils")
+				     (:file "class-utils")
+				     (:module "class"					      
+					      :components ((:module "background"
+								    :components ((:file "background-class")))
+							   (:module "block"
+								    :components ((:file "block-flag-class")
+										 (:file "block-cells-class")
+										 (:file "block-class")
+										 (:file "block-draw-class")
+										 (:file "block-sprite-sheet-class")))
+							   (:module "gameover"
+								    :components ((:file "gameover-class")))
+							   (:module "physics"
+								    :components ((:file "collision")
+										 (:file "gravity")))
+							   (:module "piyo"
+								    :components ((:file "piyo-flag-class")
+										 (:file "piyo-cells-class")
+										 (:file "piyo-class")
+										 (:file "piyo-draw-class")
+										 (:file "piyo-sprite-sheet-class")))
+							   (:module "player"
+								    :components ((:file "player-flag-class")
+										 (:file "player-cells-class")
+										 (:file "player-class")
+										 (:file "player-draw-class")
+										 (:file "player-sprite-sheet-class")))
+							   (:module "stage"
+								    :components ((:file "stage-class")))
+							   (:module "system"
+								    :components ((:file "key-state")
+										 (:file "system-data-class")
+										 (:file "system-flag-class")))))
+
+			 (:file "main")))))
 
 				
 				
