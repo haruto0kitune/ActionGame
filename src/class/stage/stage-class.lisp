@@ -5,78 +5,56 @@
     :documentation "two dimensions array."
     :initform (load-csv "map2.csv"))
    (stage-row
+    :reader stage-row
     :initform 0)
    (stage-column
-    :initform 0)    
-   (scroll-vx
-    :initform 10)
+    :reader stage-column
+    :initform 0)
    (block-instance-array
+    :reader block-instance-array
     :initform nil)
    (the-number-of-row-in-window
     :documentation "window width is 800 and block width is 40. 800 / 40 = 20"
+    :reader the-number-of-row-in-window
     :initform 20)
-   (scroll-array-counter
-    :initform 0)
-   (scroll-left-border
-    :initform 300)
-   (scroll-right-border
-    :initform 600)))    
+   (scroll
+    :reader scroll
+    :initform (make-instance 'scroll))))
 
-(defmethod initialize-slot ((stage stage))
-  (with-slots (stage-row stage-column stage-map) stage
-    (setf stage-row (array-dimension stage-map 1))
-    (setf stage-column (array-dimension stage-map 0))    
-    (generate-block-instance stage)))
+(defmethod draw-sprite ((stage stage) x y)
+;;;;; debug ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+;  (setf *block-array* (load-csv "map2.csv")) ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (with-slots (block-instance-array stage-map stage-row stage-column scroll the-number-of-row-in-window) stage
+      (loop for y from 0 to (- stage-column 1) by 1 collect
+	   (loop for x from (scroll-array-counter scroll) to (- (+ the-number-of-row-in-window (scroll-array-counter scroll)) 1) by 1 collect
+		(progn
+		  ;;debug mode
+;		  (setf (id (sprite-sheets (draw (aref block-instance-array y x)))) (aref stage-map y x))
+;		  (setf (draw-flag (flag (aref block-instance-array y x))) (aref stage-map y x))
+		  (if (>= (draw-flag (flag (aref block-instance-array y x))) 0)
+		      (draw-sprite (draw (aref block-instance-array y x))
+				   (x (image (aref block-instance-array y x)))
+				   (y (image (aref block-instance-array y x))))))))))
 
 (defmethod generate-block-instance ((stage stage))
   (with-slots (block-instance-array stage-column stage-row stage-map) stage
     (let ((block-width 40) (block-height 40))
-      (loop for y from 0 to (- block-column 1) by 1 collect
-	   (loop for x from 0 to (- block-row 1) by 1 collect
-		(setf (aref block-instance-array y x)
-		      (make-instance 'blocks
-				     :x (* x block-width) 
-				     :y (* y block-height) 
-				     :draw-flag (aref stage-map y x)
-				     :id (aref stage-map y x))))))))
+      (loop for y from 0 to (- stage-column 1) by 1 collect
+	   (loop for x from 0 to (- stage-row 1) by 1 collect
+		(progn
+		  (setf (aref block-instance-array y x) (make-instance 'blocks))
+		  (setf (x (image (aref block-instance-array y x))) (* x block-width))
+		  (setf (y (image (aref block-instance-array y x))) (* y block-height))
+		  (setf (draw-flag (flag (aref block-instance-array y x))) (aref stage-map y x))
+		  (setf (id (sprite-sheets (draw (aref block-instance-array y x)))) (aref stage-map y x))))))))
 
-(defmethod add-scroll-vx-blocks ((stage stage))
-  (with-slots (scroll-vx block-instance-array stage-column stage-row) stage
-    (loop for y from 0 to (- stage-column 1) by 1 collect
-	 (loop for x from 0 to (- stage-row 1) by 1 collect
-	      (x (aref block-instance-array y x) scroll-vx)))))
-
-(defmethod sub-scroll-vx-blocks ((stage stage))
-  (with-slots (scroll-vx block-instance-array stage-column stage-row) stage
-    (loop for y from 0 to (- stage-column 1) by 1 collect
-	 (loop for x from 0 to (- stage-row 1) by 1 collect
-	      (x (aref block-instance-array y x) (- scroll-vx))))))
-
-(defmethod add-scroll-vx-character ((stage stage) instance)
-  (with-slots (scroll-vx) stage
-    (x instance scroll-vx)))
-
-(defmethod sub-scroll-vx-character ((stage stage) instance)
-  (with-slots (scroll-vx) stage
-    (x instance (- scroll-vx))))
-
-(defmethod left-scroll ((stage stage) player)
-  (with-slots (block-instance-array scroll-array-counter the-number-of-row-in-window scroll-left-border) stage
-    (when (< (x (collision player)) scroll-line-left)
-      (sub-scroll-vx stage)
-      (when (>= (x (aref block-instance-array 0 (+ scroll-array-counter the-number-of-row-in-window))) 800)
-	(if (not (= scroll-array-counter 0)) (-= scroll-array-counter 1))))))
-  
-(defmethod right-scroll ((stage stage) player)
-  (with-slots (block-instance-array scroll-array-counter the-number-of-row-in-window scroll-right-border stage-row) stage
-    (when (> (x (collision player)) scroll-right-border)
-      (add-scroll-vx stage)
-      (when (<= (x (aref block-instance-array 0 scroll-array-counter)) -40)
-	(if (not (= (+ scroll-array-counter the-number-of-row-in-window) (- stage-row 1))) (+= scroll-array-counter 1))))))
-    
-(defmethod scroll ((stage stage))
-  (left-scroll stage)
-  (right-scroll stage))
+(defmethod initialize-slot ((stage stage))
+  (with-slots (stage-row stage-column stage-map block-instance-array) stage
+    (setf stage-row (array-dimension stage-map 1))
+    (setf stage-column (array-dimension stage-map 0))
+    (setf block-instance-array (make-array `(,stage-column ,stage-row)))
+    (generate-block-instance stage)))
 
 (defmethod initialize-instance :after ((stage stage) &rest initargs)
   (initialize-slot stage))

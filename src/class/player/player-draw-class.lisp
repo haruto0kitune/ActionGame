@@ -151,15 +151,17 @@
     (setf (gethash "down-motion-right" draw-closure) (down-motion-right player-draw))))
   
 (defmethod draw-sprite ((player-draw player-draw) x y)
-  (with-slots (action-name) player-draw
-    (cond ((string= action-name "standing-left") (funcall (gethash "standing-left" draw-closure) x y))
-	  ((string= action-name "standing-right") (funcall (gethash "standing-right" draw-closure) x y))
-	  ((string= action-name "running-left") (funcall (gethash "running-left" draw-closure) x y))
-	  ((string= action-name "running-right") (funcall (gethash "running-right" draw-closure) x y))
-	  ((string= action-name "jumping-left") (funcall (gethash "jumping-left" draw-closure) x y))
-	  ((string= action-name "jumping-right") (funcall (gethash "jumping-right" draw-closure) x y))
-	  ((string= action-name "damage-motion-left") (funcall (gethash "damage-motion-left" draw-closure) x y))
-	  ((string= action-name "damage-motion-right") (funcall (gethash "damage-motion-right" draw-closure) x y))
-	  ((string= action-name "down-motion-left") (funcall (gethash "down-motion-left" draw-closure) x y))
-	  ((string= action-name "down-motion-right") (funcall (gethash "down-motion-right" draw-closure) x y)))))
+  (with-slots (draw-closure) player-draw
+      (cond ((string= (action-flag *player-flag*) "standing-left") (funcall (gethash "standing-left" draw-closure) x y))
+	    ((string= (action-flag *player-flag*) "standing-right") (funcall (gethash "standing-right" draw-closure) x y))
+	    ((string= (action-flag *player-flag*) "running-left") (funcall (gethash "running-left" draw-closure) x y))
+	    ((string= (action-flag *player-flag*) "running-right") (funcall (gethash "running-right" draw-closure) x y))
+	    ((string= (action-flag *player-flag*) "jumping-left") (funcall (gethash "jumping-left" draw-closure) x y))
+	    ((string= (action-flag *player-flag*) "jumping-right") (funcall (gethash "jumping-right" draw-closure) x y))
+	    ((string= (action-flag *player-flag*) "damage-motion-left") (funcall (gethash "damage-motion-left" draw-closure) x y))
+	    ((string= (action-flag *player-flag*) "damage-motion-right") (funcall (gethash "damage-motion-right" draw-closure) x y))
+	    ((string= (action-flag *player-flag*) "down-motion-left") (funcall (gethash "down-motion-left" draw-closure) x y))
+	    ((string= (action-flag *player-flag*) "down-motion-right") (funcall (gethash "down-motion-right" draw-closure) x y)))))
 
+(defmethod initialize-instance :after ((player-draw player-draw) &rest initargs)
+  (generate-draw-closure player-draw))

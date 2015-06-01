@@ -34,18 +34,30 @@
     :reader draw
     :initform (make-instance 'player-draw))
    (free-fall
-    :initform (generate-free-fall))))    
+    :initform (generate-free-fall))))
+
+(defmethod set-x ((player player) value)
+  (with-slots (image collision damage-collision) player
+    (setf (x image) value)
+    (setf (x collision) (+ (x image) (x collision)))
+    (setf (x damage-collision) (+ (x image) (x damage-collision)))))
 
 (defmethod add-value-to-x ((player player) value)
-  (with-slots (x collision damage-collision) player
-    (+= x value)
+  (with-slots (image collision damage-collision) player
+    (+= (x image) value)
     (+= (x collision) value)
     (+= (x damage-collision) value)))
 
+(defmethod sub-value-to-x ((player player) value)
+  (with-slots (image collision damage-collision) player
+    (-= (x image) value)
+    (-= (x collision) value)
+    (-= (x damage-collision) value)))
+
 (defmethod update ((player player))
   (with-slots (collision damage-collision) player
-    (setf (x (damage-collision player)) (x (collision player)))
-    (setf (y (damage-collision player)) (y (collision player)))))
+    (setf (x damage-collision) (x collision))
+    (setf (y damage-collision) (y collision))))
 
 (defmethod hp ((player player) &optional (value nil))
   (with-slots (hp) player
@@ -58,22 +70,22 @@
 	((string= direction-string "right") (move-right player))))
 
 (defmethod move-left ((player player))
-  (with-slots (x collision vx) player
-    (setf (direction player-flag) "left")
-    (-= (x (x player)) vx)
-    (-= (x (collision player)) vx)
-    (if (eq (air-flag player-flag) nil)
-	(setf (action-flag player-flag) "running-left")
-	(setf (action-flag player-flag) "jumping-left"))))
+  (with-slots (image collision velocity) player
+    (setf (direction *player-flag*) "left")
+    (-= (x image) (vx velocity))
+    (-= (x collision) (vx velocity))
+    (if (eq (air-flag *player-flag*) nil)
+	(setf (action-flag *player-flag*) "running-left")
+	(setf (action-flag *player-flag*) "jumping-left"))))
 
 (defmethod move-right ((player player))
-  (with-slots (x collision vx) player
-    (setf (direction player-flag) "right")
-    (+= (x (x player)) vx)
-    (+= (x (collision player)) vx)
-    (if (eq (air-flag player-flag) nil)
-	(setf (action-flag player-flag) "running-right")
-	(setf (action-flag player-flag) "jumping-right"))))
+  (with-slots (image collision velocity) player
+    (setf (direction *player-flag*) "right")
+    (+= (x image) (vx velocity))
+    (+= (x collision) (vx velocity))
+    (if (eq (air-flag *player-flag*) nil)
+	(setf (action-flag *player-flag*) "running-right")
+	(setf (action-flag *player-flag*) "jumping-right"))))
 
 (defmethod generate-jump ((player player))
   (with-slots (jump-power collision) player
@@ -81,44 +93,44 @@
       (lambda (&optional reset)
 	(progn
 	  (if (eq reset t) (setf force start-jump-power))
-	  (if (eq (jump-flag player-flag) t)
+	  (if (eq (jump-flag *player-flag*) t)
 	      (progn		
 		(setf prev-y temp-y)
 		(-= temp-y (floor force))
-		(-= (y (image player)) (floor force))
-		(-= (y (collision player)) (floor force))		
+		(-= (y image) (floor force))
+		(-= (y collision) (floor force))		
 		(if (not (<= (floor force) 0))
 		    (-= force 1.5)
 		    (progn
-		      (setf (jump-flag player-flag) nil)
+		      (setf (jump-flag *player-flag*) nil)
 		      (setf force start-jump-power))))))))))
 
 (defmethod jump ((player player))
   (with-slots (jump) player
-    (when (eq (ground-flag player-flag) t)
-      (setf (jump-flag player-flag) t)
-      (cond ((string= (direction player-flag) "left") (setf (action-flag player-flag) "jumping-left"))
-	    ((string= (direction player-flag) "right") (setf (action-flag player-flag) "jumping-right")))
+    (when (eq (ground-flag *player-flag*) t)
+      (setf (jump-flag *player-flag*) t)
+      (cond ((string= (direction *player-flag*) "left") (setf (action-flag *player-flag*) "jumping-left"))
+	    ((string= (direction *player-flag*) "right") (setf (action-flag *player-flag*) "jumping-right")))
     (funcall jump))))
 
 (defmethod reinitialize-instance :after ((player player) &rest initargs)
   (with-slots (hp x y collision damage-collision) player
     (setf hp 1)
-    (setf (x (collision player)) (+ (x (x player)) 43))
-    (setf (y (collision player)) (+ (y (y player)) 15))
-    (setf (x (damage-collision player)) (+ (x (x player)) 43))
-    (setf (y (damage-collision player)) (+ (y (y player)) 15))))
+    (setf (x collision) (+ (x image) 43))
+    (setf (y collision) (+ (y image) 15))
+    (setf (x damage-collision) (+ (x image) 43))
+    (setf (y damage-collision) (+ (y image) 15))))
 
 (defmethod initialize-instance :after ((player player) &rest initargs)
-  (with-slots (x y collision damage-collision cx-minus-px cy-minus-py jump) player
-    (cond ((string= (direction player-flag) "left") (setf (action-flag player-flag) "standing-left"))
-	  ((string= (direction player-flag) "right") (setf (action-flag player-flag) "standing-right")))
-    (setf (x (collision player)) (+ (x (x player)) (x (collision player))))
-    (setf (y (collision player)) (+ (y (y player)) (y (collision player))))
-    (setf (x (damage-collision player)) (x (collision player)))
-    (setf (y (damage-collision player)) (y (collision player)))
-    (setf (w (damage-collision player)) (w (collision player)))
-    (setf (h (damage-collision player)) (h (collision player)))
-    (setf cx-minus-px (- (x (collision player)) (x (x player))))
-    (setf cy-minus-py (- (y (collision player)) (y (y player))))
+  (with-slots (image collision damage-collision cx-minus-px cy-minus-py jump) player
+    (cond ((string= (direction *player-flag*) "left") (setf (action-flag *player-flag*) "standing-left"))
+	  ((string= (direction *player-flag*) "right") (setf (action-flag *player-flag*) "standing-right")))
+    (setf (x collision) (+ (x image) (x collision)))
+    (setf (y collision) (+ (y image) (y collision)))
+    (setf (x damage-collision) (x collision))
+    (setf (y damage-collision) (y collision))
+    (setf (w damage-collision) (w collision))
+    (setf (h damage-collision) (h collision))
+    (setf cx-minus-px (- (x collision) (x image)))
+    (setf cy-minus-py (- (y collision) (y image)))
     (setf jump (generate-jump player))))

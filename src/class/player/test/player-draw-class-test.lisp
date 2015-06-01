@@ -1,13 +1,12 @@
 (in-package :game)
 
-(defun test ()
+(defun player-draw-class-test ()
   (sdl:with-init ()
     (sdl:window 300 300)
     (setf (sdl:frame-rate) 60)
-    (let ((ins (make-instance 'player-sprite-sheet)) (x 0))
+    (let ((ins (make-instance 'player-draw)))
       (print ins)
-      (print (gethash "running-left" (sprite-sheet ins)))
-      (print (sdl:cells (gethash "running-left" (sprite-sheet ins))))
+      (setf (action-flag *player-flag*) "running-right")
       (sdl:with-events (:poll)
 	(:quit-event () t)
 	(:key-down-event  (:key key)
@@ -15,13 +14,7 @@
 			    (sdl:push-quit-event)))
 	(:idle ()
 	       (sdl:clear-display sdl:*black*)
-	       (sdl:draw-surface-at-* (gethash "running-left" (sprite-sheet ins)) 0 0 :cell x)
+	       (draw-sprite ins 0 0)
 	       (sdl:update-display))))))
-  
-(test)
 
-
-
-	     
-       
-      
+(player-draw-class-test)

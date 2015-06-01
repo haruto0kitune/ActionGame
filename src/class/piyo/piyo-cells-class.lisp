@@ -27,3 +27,7 @@
     (setf (gethash "standing-right" total-cells) 0)
     (setf (gethash "walking-left" total-cells) 1)
     (setf (gethash "walking-right" total-cells) 1)))
+
+(defmethod initialize-instance :after ((piyo-cells piyo-cells) &rest initargs)
+  (set-x-cells piyo-cells)
+  (set-total-cells piyo-cells))

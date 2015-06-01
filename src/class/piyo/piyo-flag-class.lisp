@@ -7,6 +7,7 @@
     :initform nil
     :initarg :direction)
    (action-flag
+    :accessor action-flag
     :initform nil)
    (draw-flag
     :accessor draw-flag

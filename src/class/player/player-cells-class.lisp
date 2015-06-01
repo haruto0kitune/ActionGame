@@ -14,10 +14,6 @@
     :reader total-cells
     :initform (make-hash-table :test #'equal))))
 
-(defmethod initialize-instance :after ((player-cells player-cells) &rest initargs)
-  (set-x-cells player-cells)
-  (set-total-cells player-cells))
-
 (defmethod set-x-cells ((player-cells player-cells))
   (with-slots (x-cells) player-cells
     (setf (gethash "standing-left" x-cells) 11)
@@ -44,3 +40,6 @@
     (setf (gethash "down-motion-left" total-cells) 8)
     (setf (gethash "down-motion-right" total-cells) 8)))
 
+(defmethod initialize-instance :after ((player-cells player-cells) &rest initargs)
+  (set-x-cells player-cells)
+  (set-total-cells player-cells))

@@ -43,67 +43,59 @@
     (setf (gethash "down-motion-left" sprite-sheet) (sdl:load-image (gethash "down-motion-left" filename) :color-key sdl:*black*))
     (setf (gethash "down-motion-right" sprite-sheet) (sdl:load-image (gethash "down-motion-right" filename) :color-key sdl:*black*))))
 
-(defmacro sprite-cells2 (player-sprite-sheet string)
+(defmacro sprite-cells2 (w h string cells)
   "return list"
- ``(with-slots (w h cells) player-sprite-sheet
-     (loop for y from 0 to
-	  (funcall #'y-cells cells) by ,h
-	 append (loop for x from 0 to (funcall #'* ,w (funcall #'gethash string (funcall #'x-cells cells))) by ,w collect (list x y ,w ,h)))))
-
-(defmethod generate-sprite-cells ((player-sprite-sheet player-sprite-sheet) string)
-  "return list"
-  (with-slots (w h cells) player-sprite-sheet
-    ``(loop for y from 0 to ,,(funcall #'y-cells cells) by ,,h
-	 append (loop for x from 0 to (funcall #'* ,,w ,(funcall ,#'gethash ,string (funcall ,#'x-cells ,cells))) by ,,w collect (list x y ,,w ,,h)))))
+  `(loop for y from 0 to (funcall #'y-cells ,cells) by ,h
+       append (loop for x from 0 to (funcall #'* ,w (funcall #'gethash ,string (funcall #'x-cells ,cells))) by ,w collect (list x y ,w ,h))))
 
 (defmethod set-standing-left ((player-sprite-sheet player-sprite-sheet))
-  (with-slots (filename w h cells sprite-sheet) player-sprite-sheet
-    (let ((sprite-cells (generate-sprite-cells player-sprite-sheet "standing-left")))
+  (with-slots (w h cells sprite-sheet) player-sprite-sheet
+    (let ((sprite-cells (sprite-cells2 w h "standing-left" cells)))
       (setf (sdl:cells (gethash "standing-left" sprite-sheet)) sprite-cells))))
 
 (defmethod set-standing-right ((player-sprite-sheet player-sprite-sheet))
-  (with-slots (filename w h cells sprite-sheet) player-sprite-sheet
-    (let ((sprite-cells (generate-sprite-cells player-sprite-sheet "standing-right")))
+  (with-slots (w h cells sprite-sheet) player-sprite-sheet
+    (let ((sprite-cells (sprite-cells2 w h "standing-right" cells)))
       (setf (sdl:cells (gethash "standing-right" sprite-sheet)) sprite-cells))))
 
 (defmethod set-running-left ((player-sprite-sheet player-sprite-sheet))
-  (with-slots (filename w h cells sprite-sheet) player-sprite-sheet
-    (let ((sprite-cells (generate-sprite-cells player-sprite-sheet "running-left")))
+  (with-slots (w h cells sprite-sheet) player-sprite-sheet
+    (let ((sprite-cells (sprite-cells2 w h "running-left" cells)))
       (setf (sdl:cells (gethash "running-left" sprite-sheet)) sprite-cells))))
 
 (defmethod set-running-right ((player-sprite-sheet player-sprite-sheet))
-  (with-slots (filename w h cells sprite-sheet) player-sprite-sheet
-    (let ((sprite-cells (generate-sprite-cells player-sprite-sheet "running-right")))
+  (with-slots (w h cells sprite-sheet) player-sprite-sheet
+    (let ((sprite-cells (sprite-cells2 w h "running-right" cells)))
       (setf (sdl:cells (gethash "running-right" sprite-sheet)) sprite-cells))))
 
 (defmethod set-jumping-left ((player-sprite-sheet player-sprite-sheet))
-  (with-slots (filename w h cells sprite-sheet) player-sprite-sheet
-    (let ((sprite-cells (generate-sprite-cells player-sprite-sheet"jumping-left")))
+  (with-slots (w h cells sprite-sheet) player-sprite-sheet
+    (let ((sprite-cells (sprite-cells2 w h "jumping-left" cells)))
       (setf (sdl:cells (gethash "jumping-left" sprite-sheet)) sprite-cells))))
 
 (defmethod set-jumping-right ((player-sprite-sheet player-sprite-sheet))
-  (with-slots (filename w h cells sprite-sheet) player-sprite-sheet
-    (let ((sprite-cells (generate-sprite-cells player-sprite-sheet "jumping-right")))
+  (with-slots (w h cells sprite-sheet) player-sprite-sheet
+    (let ((sprite-cells (sprite-cells2 w h "jumping-right" cells)))
       (setf (sdl:cells (gethash "jumping-right" sprite-sheet)) sprite-cells))))
 
 (defmethod set-damage-motion-left ((player-sprite-sheet player-sprite-sheet))
-  (with-slots (filename w h cell sprite-sheet) player-sprite-sheet
-    (let ((sprite-cells (generate-sprite-cells player-sprite-sheet "damage-motion-left")))
+  (with-slots (w h cells sprite-sheet) player-sprite-sheet
+    (let ((sprite-cells (sprite-cells2 w h "damage-motion-left" cells)))
       (setf (sdl:cells (gethash "damage-motion-left" sprite-sheet)) sprite-cells))))
 
 (defmethod set-damage-motion-right ((player-sprite-sheet player-sprite-sheet))
-  (with-slots (filename w h cells sprite-sheet) player-sprite-sheet
-    (let ((sprite-cells (generate-sprite-cells player-sprite-sheet "damage-motion-right")))
+  (with-slots (w h cells sprite-sheet) player-sprite-sheet
+    (let ((sprite-cells (sprite-cells2 w h "damage-motion-right" cells)))
       (setf (sdl:cells (gethash "damage-motion-right" sprite-sheet)) sprite-cells))))
 
 (defmethod set-down-motion-left ((player-sprite-sheet player-sprite-sheet))
-  (with-slots (filename w h cells sprite-sheet) player-sprite-sheet
-    (let ((sprite-cells (generate-sprite-cells player-sprite-sheet "down-motion-left")))
+  (with-slots (w h cells sprite-sheet) player-sprite-sheet
+    (let ((sprite-cells (sprite-cells2 w h "down-motion-left" cells)))
       (setf (sdl:cells (gethash "down-motion-left" sprite-sheet)) sprite-cells))))
 
 (defmethod set-down-motion-right ((player-sprite-sheet player-sprite-sheet))
-  (with-slots (filename w h cells sprite-sheet) player-sprite-sheet
-    (let ((sprite-cells (generate-sprite-cells player-sprite-sheet "down-motion-right")))
+  (with-slots (w h cells sprite-sheet) player-sprite-sheet
+    (let ((sprite-cells (sprite-cells2 w h "down-motion-right" cells)))
       (setf (sdl:cells (gethash "down-motion-right" sprite-sheet)) sprite-cells))))  
 
 (defmethod generate-sprite-sheet ((player-sprite-sheet player-sprite-sheet))

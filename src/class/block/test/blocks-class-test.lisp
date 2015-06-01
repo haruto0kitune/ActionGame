@@ -1,0 +1,18 @@
+(in-package :game)
+
+(defun blocks-class-test ()
+  (sdl:with-init ()
+    (sdl:window 300 300)
+    (setf (sdl:frame-rate) 60)
+    (let ((ins (make-instance 'blocks)))      
+      (sdl:with-events (:poll)
+	(:quit-event () t)
+	(:key-down-event  (:key key)
+			  (when (sdl:key= key :sdl-key-escape)
+			    (sdl:push-quit-event)))
+	(:idle ()
+	       (sdl:clear-display sdl:*black*)
+	       (draw-sprite (draw ins) 0 0)
+	       (sdl:update-display))))))
+  
+(blocks-class-test)

@@ -2,8 +2,10 @@
 
 (defclass velocity ()
   ((vx
+    :accessor vx
     :initarg :vx)
    (vy
+    :accessor vy
     :initarg :vy)))
 
 (defclass rect ()

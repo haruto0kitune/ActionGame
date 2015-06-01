@@ -39,7 +39,9 @@
 										 (:file "player-draw-class")
 										 (:file "player-sprite-sheet-class")))
 							   (:module "stage"
-								    :components ((:file "stage-class")))
+								    :components ((:file "scroll-class")
+										 (:file "stage-class")))
+										 
 							   (:module "system"
 								    :components ((:file "key-state")
 										 (:file "system-data-class")

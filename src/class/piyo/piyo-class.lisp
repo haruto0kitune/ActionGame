@@ -46,45 +46,33 @@
     :reader free-fall
     :initform (generate-free-fall))))
 
-(defmethod initialize-instance :after ((piyo piyo) &rest initargs)
-  (with-slots (x y collision attack-collision jump cx-minus-px cy-minus-py) piyo
-    (setf (x (collision piyo)) (+ x (x (collision piyo))))
-    (setf (y (collision piyo)) (+ y (y (collision piyo))))
-    (setf (x (attack-collision piyo)) (x (collision piyo)))
-    (setf (y (attack-collision piyo)) (y (collision piyo)))
-    (setf (w (attack-collision piyo)) (w (collision piyo)))
-    (setf (h (attack-collision piyo)) (h (collision piyo)))
-    (setf jump (generate-jump piyo))
-    (setf cx-minus-px (- (x (collision piyo)) x))
-    (setf cy-minus-py (- (y (collision piyo)) y))))
-
 (defmethod update ((piyo piyo))
   (with-slots (collision attack-collision damage-collision) piyo
-    (setf (x (attack-collision piyo)) (x (collision piyo)))
-    (setf (y (attack-collision piyo)) (y (collision piyo)))
-    (setf (x (damage-collision piyo)) (x (collision piyo)))
-    (setf (y (damage-collision piyo)) (y (collision piyo)))))
+    (setf (x attack-collision) (x collision))
+    (setf (y attack-collision) (y collision))
+    (setf (x damage-collision) (x collision))
+    (setf (y damage-collision) (y collision))))
 
 (defmethod move ((piyo piyo) direction-string)
   (cond ((string= direction-string "left") (move-left piyo))
 	((string= direction-string "right") (move-right piyo))))
 
 (defmethod move-left ((piyo piyo))
-  (with-slots (x vx collision damage-collision direction) piyo
+  (with-slots (image velocity collision damage-collision direction) piyo
     (setf direction "left")
-    (-= x vx)
-    (-= (x (collision piyo)) vx)
-    (-= (x (damage-collision piyo)) vx)))
+    (-= (x image) (vx velocity))
+    (-= (x collision) (vx velocity))
+    (-= (x damage-collision) (vx velocity))))
 
 (defmethod move-right ((piyo piyo))
-  (with-slots (x vx collision damage-collision direction) piyo
+  (with-slots (image velocity collision damage-collision direction) piyo
     (setf direction "right")
-    (+= x vx)
-    (+= (x (collision piyo)) vx)
-    (+= (x (damage-collision piyo)) vx)))
+    (+= (x image) (vx velocity))
+    (+= (x collision) (vx velocity))
+    (+= (x damage-collision piyo) (vx velocity))))
 	   
 (defmethod generate-jump ((piyo piyo))
-  (with-slots (jump-power jump-flag collision y) piyo
+  (with-slots (jump-power jump-flag collision image) piyo
     (let* ((start-jump-power jump-power)
 	   (force jump-power)
 	   (prev-y 0)
@@ -97,8 +85,8 @@
 	      (progn		
 		(setf prev-y temp-y)
 		(-= temp-y (floor force))
-		(-= y (floor force))
-		(-= (y (collision piyo)) (floor force))
+		(-= (y image) (floor force))
+		(-= (y collision) (floor force))
 		(if (not (<= (floor force) 0))
 		    (-= force 1.5)
 		    (progn
@@ -108,3 +96,15 @@
 (defmethod jump ((piyo piyo))
   (with-slots (jump) piyo
       (funcall jump)))	  
+
+(defmethod initialize-instance :after ((piyo piyo) &rest initargs)
+  (with-slots (image collision attack-collision jump cx-minus-px cy-minus-py) piyo
+    (setf (x collision) (+ (x image) (x collision)))
+    (setf (y collision) (+ (y image) (y collision)))
+    (setf (x attack-collision) (x collision))
+    (setf (y attack-collision) (y collision))
+    (setf (w attack-collision) (w collision))
+    (setf (h attack-collision) (h collision))
+    (setf jump (generate-jump piyo))
+    (setf cx-minus-px (- (x collision) (x image)))
+    (setf cy-minus-py (- (y collision) (y image)))))

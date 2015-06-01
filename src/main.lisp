@@ -68,7 +68,7 @@
 	      (if (>= (draw-flag (aref instance-array y x)) 0)
 		  (draw-sprite (aref instance-array y x)))))))
 
-(defun draw ()
+(defun draw-object ()
   ;; damage piyo
   (when (eq (damage-detect *piyo*) t)
     (if (>= (image-object-hp *player*) 1)
@@ -221,7 +221,7 @@
 ;    (scroll)
     (update-character)
     (piyo-ai)
-    (draw)
+    (draw-object)
     (cond ((string= (image-object-direction *player*) "left")
 	   (setf (image-object-action-name *player*)
 		 "fox-girl-down-motion-left"))
@@ -242,7 +242,7 @@
 ;    (scroll)
     (update-character)
     (piyo-ai)
-    (draw)
+    (draw-object)
     (sdl:update-display)))
 
 (defun reset ()

@@ -1,0 +1,20 @@
+(in-package :game)
+
+(defun piyo-draw-test ()
+  (sdl:with-init ()
+    (sdl:window 300 300)
+    (setf (sdl:frame-rate) 60)
+    (let ((ins (make-instance 'piyo-draw)))
+    (setf (action-flag *piyo-flag*) "walking-left")
+      (sdl:with-events (:poll)
+	(:quit-event () t)
+	(:key-down-event (:key key)
+			 (when (sdl:key= key :sdl-key-escape)
+			   (sdl:push-quit-event)))
+	(:idle ()
+	       (sdl:clear-display sdl:*black*)
+	       (draw-sprite ins 0 0)
+	       (sdl:update-display))))))
+
+(piyo-draw-test)
+      

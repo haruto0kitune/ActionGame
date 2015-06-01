@@ -3,20 +3,18 @@
 (defclass background ()
   ((filename
     :initform "../pixel_animation/background.png")
-   (x
-    :initform 0)
-   (y
-    :initform 0)
    (image
+    :initform (make-instance 'rect :x 0 :y 0 :w 800 :h 600))
+   (sprite
     :initform nil)))
 
 (defmethod initialize-instance :after ((background background) &rest initargs)
-  (with-slots (filename image) background	       
-    (setf image (sdl:load-image filename))))
+  (with-slots (filename sprite) background	       
+    (setf sprite (sdl:load-image filename))))
 
 (defmethod draw-sprite ((background background) x y)
-  (with-slots (x y image) background
-    (sdl:draw-surface-at-* image x y)))
+  (with-slots (sprite) background
+    (sdl:draw-surface-at-* sprite x y)))
 	 
 
     

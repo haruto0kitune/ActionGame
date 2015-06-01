@@ -1,11 +1,11 @@
-;;;; uses instance of player-flag class
-;;;; player-flag is global
+;;;; uses instance of piyo-flag class
+;;;; piyo-flag is global
 
 (in-package :game)
 
 (defclass piyo-draw ()
   ((sprite-sheets    
-    :initform (make-instance 'player-sprite-sheet))
+    :initform (make-instance 'piyo-sprite-sheet))
    (draw-closure
     :initform (make-hash-table :test #'equal))))
 
@@ -38,6 +38,7 @@
     (let ((current-cell 0) (frame-counter 0))
       (lambda (x y)
 	(sdl:draw-surface-at-* (gethash "walking-left" (sprite-sheet sprite-sheets)) x y :cell current-cell)
+	(print current-cell)
 	(incf frame-counter)
 	(when (> frame-counter (gethash "walking-left" (duration sprite-sheets)))
 	  (incf current-cell)
@@ -66,10 +67,10 @@
     
 (defmethod draw-sprite ((piyo-draw piyo-draw) x y)
   (with-slots (action-name draw-closure) piyo-draw
-    (cond ((string= action-name "standing-left") (funcall (gethash "standing-left" draw-closure) x y))
-	  ((string= action-name "standing-right") (funcall (gethash "standing-right" draw-closure) x y))
-	  ((string= action-name "walking-left") (funcall (gethash "walking-left" draw-closure) x y))
-	  ((string= action-name "walking-right") (funcall (gethash "walking-right" draw-closure) x y)))))
+      (cond ((string= (action-flag *piyo-flag*) "standing-left") (funcall (gethash "standing-left" draw-closure) x y))
+	    ((string= (action-flag *piyo-flag*) "standing-right") (funcall (gethash "standing-right" draw-closure) x y))
+	    ((string= (action-flag *piyo-flag*) "walking-left") (funcall (gethash "walking-left" draw-closure) x y))
+	    ((string= (action-flag *piyo-flag*) "walking-right") (funcall (gethash "walking-right" draw-closure) x y)))))
 
 (defmethod initialize-instance :after ((piyo-draw piyo-draw) &rest initargs)
   (generate-draw-closure piyo-draw))
