@@ -14,6 +14,7 @@
     (let ((ins (make-instance 'stage)) (player (make-instance 'player)) (current-key-state (make-instance 'key-state)))
       (print ins)
       (set-x player 440)
+      (setf (action-flag *player-flag*) "running-left")
       (sdl:with-events (:poll)
 	(:quit-event () t)
 	(:key-down-event (:key key)

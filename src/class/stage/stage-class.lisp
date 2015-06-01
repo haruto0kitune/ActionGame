@@ -19,26 +19,21 @@
     :initform 20)
    (the-number-of-column-in-window
     :documentation "window width is 600 and block width is 40. 600 / 40 = 15"
-    :reader the-number-of-row-in-window
+    :reader the-number-of-column-in-window
     :initform 15)
    (scroll
     :reader scroll
     :initform (make-instance 'scroll))))
 
 (defmethod draw-sprite ((stage stage) x y)
-;;;;; debug ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
-;  (setf *block-array* (load-csv "map2.csv")) ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (with-slots (block-instance-array scroll the-number-of-row-in-window the-number-of-column-in-window stage-row) stage
-    (print (scroll-array-counter scroll))
-    (print (draw-flag (flag (aref block-instance-array 14 20))))
+  (with-slots (block-instance-array scroll the-number-of-row-in-window the-number-of-column-in-window stage-row stage-column) stage
     (loop for y from 0 to (- the-number-of-column-in-window 1) by 1 collect
-	 (loop for x from (- (scroll-array-counter scroll) 1) to (+ (+ the-number-of-row-in-window (scroll-array-counter scroll)) 1) by 1 collect
+	 (loop for x from (- (scroll-array-counter scroll) 1) to (+ the-number-of-row-in-window (scroll-array-counter scroll)) by 1 collect
 	      (progn
-		(if (>= (draw-flag (flag (aref block-instance-array y x))) 0)
-		    (draw-sprite (draw (aref block-instance-array y x))
-				 (x (image (aref block-instance-array y x)))
-				 (y (image (aref block-instance-array y x))))))))))
+		(when (>= (draw-flag (flag (aref block-instance-array y x))) 0)
+		  (draw-sprite (draw (aref block-instance-array y x))
+			       (x (image (aref block-instance-array y x)))
+			       (y (image (aref block-instance-array y x))))))))))
 
 (defmethod generate-block-instance ((stage stage))
   (with-slots (block-instance-array stage-column stage-row stage-map) stage

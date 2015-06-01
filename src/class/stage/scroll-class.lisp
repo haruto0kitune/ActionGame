@@ -48,25 +48,28 @@
       (when (>= scroll-array-counter 2)
 	(add-scroll-vx-blocks scroll stage)
 	(add-scroll-vx-character scroll player))
-      (when (>= (x (image (aref (block-instance-array stage) 0 (+ scroll-array-counter (the-number-of-row-in-window stage))))) 600)
-	(when (>= scroll-array-counter 2)
-	  (-= scroll-array-counter 1))))))
-
-;	(if (not (= scroll-array-counter 0)) (-= scroll-array-counter 1))))))
+      (let ((y 0)) 
+	(loop	 
+	   (when (>= (x (image (aref (block-instance-array stage) y (+ scroll-array-counter (the-number-of-row-in-window stage))))) 800)
+	     (when (>= scroll-array-counter 2)
+	       (-= scroll-array-counter 1)))
+	   (incf y)
+	   (if (>= y (stage-column stage)) (return)))))))
   
 (defmethod right-scroll ((scroll scroll) player stage)
   (with-slots (scroll-array-counter scroll-right-border) scroll
     (when (> (x (collision player)) scroll-right-border)
-      (when (> (stage-row stage) (+ (+ (the-number-of-row-in-window stage) scroll-array-counter) 2))
+      (when (>= (- (stage-row stage) (the-number-of-row-in-window stage) 2) scroll-array-counter)
 	(sub-scroll-vx-blocks scroll stage)
 	(sub-scroll-vx-character scroll player))
-      (when (< (x (image (aref (block-instance-array stage) 0 scroll-array-counter))) 0)
-	(when (> (stage-row stage) (+ (+ (the-number-of-row-in-window stage) scroll-array-counter) 2))
-	  (+= scroll-array-counter 1))))))
-
-;	(if (not (= (+ scroll-array-counter (the-number-of-row-in-window stage)) (stage-row stage))) (+= scroll-array-counter 1))))))
-;	(if (not (= (+ scroll-array-counter (the-number-of-row-in-window stage)) (- (stage-row stage) 1))) (+= scroll-array-counter 1))))))
-    
+      (let ((y 0))
+	    (loop
+	       (when (< (x (image (aref (block-instance-array stage) y scroll-array-counter))) 0)
+		 (when (>= (- (stage-row stage) (the-number-of-row-in-window stage) 2) scroll-array-counter)
+		   (+= scroll-array-counter 1)))
+	       (incf y)
+	       (if (>= y (stage-column stage)) (return)))))))
+	        
 (defmethod do-scroll ((scroll scroll) player stage)
   (left-scroll scroll player stage)
   (right-scroll scroll player stage))
