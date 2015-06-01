@@ -6,7 +6,7 @@
     :initform 10)
    (scroll-array-counter
     :accessor scroll-array-counter
-    :initform 0)
+    :initform 1)
    (scroll-left-border
     :accessor scroll-left-border
     :initform 200)
@@ -45,19 +45,27 @@
 (defmethod left-scroll ((scroll scroll) player stage)
   (with-slots (scroll-array-counter scroll-left-border) scroll
     (when (< (x (collision player)) scroll-left-border)
-      (add-scroll-vx-blocks scroll stage)
-      (add-scroll-vx-character scroll player)
-      (when (>= (x (collision (aref (block-instance-array stage) 0 (+ scroll-array-counter (the-number-of-row-in-window stage))))) 800)
-	(if (not (= scroll-array-counter 0)) (-= scroll-array-counter 1))))))
+      (when (>= scroll-array-counter 2)
+	(add-scroll-vx-blocks scroll stage)
+	(add-scroll-vx-character scroll player))
+      (when (>= (x (image (aref (block-instance-array stage) 0 (+ scroll-array-counter (the-number-of-row-in-window stage))))) 600)
+	(when (>= scroll-array-counter 2)
+	  (-= scroll-array-counter 1))))))
+
+;	(if (not (= scroll-array-counter 0)) (-= scroll-array-counter 1))))))
   
 (defmethod right-scroll ((scroll scroll) player stage)
   (with-slots (scroll-array-counter scroll-right-border) scroll
     (when (> (x (collision player)) scroll-right-border)
-      (sub-scroll-vx-blocks scroll stage)
-      (sub-scroll-vx-character scroll player)
-      (when (<= (x (collision (aref (block-instance-array stage) 0 scroll-array-counter))) 600)
+      (when (> (stage-row stage) (+ (+ (the-number-of-row-in-window stage) scroll-array-counter) 2))
+	(sub-scroll-vx-blocks scroll stage)
+	(sub-scroll-vx-character scroll player))
+      (when (< (x (image (aref (block-instance-array stage) 0 scroll-array-counter))) 0)
+	(when (> (stage-row stage) (+ (+ (the-number-of-row-in-window stage) scroll-array-counter) 2))
+	  (+= scroll-array-counter 1))))))
+
 ;	(if (not (= (+ scroll-array-counter (the-number-of-row-in-window stage)) (stage-row stage))) (+= scroll-array-counter 1))))))
-	(if (not (= (+ scroll-array-counter (the-number-of-row-in-window stage)) (- (stage-row stage) 1))) (+= scroll-array-counter 1))))))
+;	(if (not (= (+ scroll-array-counter (the-number-of-row-in-window stage)) (- (stage-row stage) 1))) (+= scroll-array-counter 1))))))
     
 (defmethod do-scroll ((scroll scroll) player stage)
   (left-scroll scroll player stage)
