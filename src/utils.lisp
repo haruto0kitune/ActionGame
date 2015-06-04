@@ -15,8 +15,17 @@
   (let ((a `'(,additional)))
   `(append ,l ,a)))
 
+(defun draw-image-box (instance)
+  (when (eq (debug-flag *system-flag*) t)
+    (let ((color (sdl:color :g 255)))
+      (sdl:draw-rectangle-* (x (image instance))
+			    (y (image instance))
+			    (w (image instance))
+			    (h (image instance))
+			    :color color))))
+
 (defun draw-collision-box (instance)
-  (when (eq (debug-flag system-flag) t)
+  (when (eq (debug-flag *system-flag*) t)
     (let ((color (sdl:color :r 255)))
       (sdl:draw-rectangle-* (x (collision instance))
 			    (y (collision instance))
@@ -25,7 +34,7 @@
 			    :color color))))
 
 (defun draw-damage-box (instance)
-  (when (eq (debug-flag system-flag) t)
+  (when (eq (debug-flag *system-flag*) t)
     (let ((color (sdl:color :b 255)))
       (sdl:draw-rectangle-* (x (damage-collision instance))
 			    (y (damage-collision instance))

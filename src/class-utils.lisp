@@ -1,11 +1,16 @@
 (in-package :game)
 
+(defclass segment ()
+  ())
+
 (defclass velocity ()
   ((vx
     :accessor vx
+    :initform 0
     :initarg :vx)
    (vy
     :accessor vy
+    :initform 0
     :initarg :vy)))
 
 (defclass rect ()

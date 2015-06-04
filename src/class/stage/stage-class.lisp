@@ -33,7 +33,12 @@
 		(when (>= (draw-flag (flag (aref block-instance-array y x))) 0)
 		  (draw-sprite (draw (aref block-instance-array y x))
 			       (x (image (aref block-instance-array y x)))
-			       (y (image (aref block-instance-array y x))))))))))
+			       (y (image (aref block-instance-array y x))))
+;;;;; debug ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		  (when (eq (debug-flag *system-flag*) t)
+		    (draw-image-box (aref block-instance-array y x))
+		    (draw-collision-box (aref block-instance-array y x)))))))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod generate-block-instance ((stage stage))
   (with-slots (block-instance-array stage-column stage-row stage-map) stage

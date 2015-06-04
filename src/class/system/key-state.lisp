@@ -21,4 +21,5 @@
   (right :sdl-key-right)
   (left :sdl-key-left)
   (up :sdl-key-up)
+  (down :sdl-key-down)
   (x :sdl-key-x))

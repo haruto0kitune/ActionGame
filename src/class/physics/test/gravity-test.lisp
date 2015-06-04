@@ -7,7 +7,7 @@
     (when (eq right t)
       (move player "right"))))
 
-(defun scroll-class-test ()
+(defun gravity-test ()
   (sdl:with-init ()
     (sdl:window 800 600)
     (setf (sdl:frame-rate) 60)
@@ -26,9 +26,10 @@
 	(:idle ()
 	       (sdl:clear-display sdl:*black*)
 	       (key-event player current-key-state)
+	       (update player)
 	       (draw-sprite ins 0 0)
 	       (draw-sprite (draw player) (x (image player)) (y (image player)))
 	       (do-scroll (scroll ins) player ins)
 	       (sdl:update-display))))))
 
-(scroll-class-test)
+(gravity-test)

@@ -22,6 +22,19 @@
 
 (in-package :game)
 
+;;;; side effect
+(defun collide-bottom-and-top (instance1 instance2)
+  (when (< (y (collision instance2)) (+ (y (collision instance1)) (h (collision instance1)))); (/ (+ (y rect2) (h rect2)) 3))
+;	     (< (x (collision instance1)) (x (collision instance2))))
+    (print "ab")
+    (setf (y (image instance1)) (- (y (image instance2)) (h (image instance1))))
+    (setf (y (collision instance1)) (- (y (collision instance2)) (h (collision instance1))))))
+
+(defun block-top-collision (instance1 stage)
+  (loop for y from 0 to (- (stage-column stage) 1) by 1 collect
+       (loop for x from 0 to (- (stage-row stage) 1) by 1 collect
+	    (collide-bottom-and-top instance1 (aref (block-instance-array stage) y x)))))
+
 (defun collide (instance1 instance2)
   "Type of instance is image object"
   (let* ((c-x1 (x (collision instance1)))

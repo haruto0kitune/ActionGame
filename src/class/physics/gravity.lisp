@@ -2,13 +2,14 @@
 
 (defun generate-free-fall ()
   (let ((g 0) (temp-g 0))
-    (lambda (image-object flag)
+    (lambda (flag)
       (if (eq flag t)
 	  (progn
-	    (+= (y (image image-object)) (setf temp-g (floor g)))
-	    (+= (y (collision image-object)) (setf temp-g (floor g)))
-	    (+= g 2.8)
-	    (if (>= g 25) (setf g 25)))
+	    (+= g 0.6)
+	    (if (>= g 12) (setf g 12))
+	    (setf temp-g (floor g)))
 	  (setf g 0)))))
+
+
 	
 

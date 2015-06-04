@@ -15,7 +15,7 @@
    :debug-flag t
    :full-screen-flag nil))
 
-(defparameter system-flag (make-instance 'system-flag))
+(defparameter *system-flag* (make-instance 'system-flag))
 
 
 

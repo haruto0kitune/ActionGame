@@ -54,8 +54,15 @@
     (-= (x collision) value)
     (-= (x damage-collision) value)))
 
+(defmethod set-vy ((player player))
+  (with-slots (velocity free-fall) player
+    (setf (vy velocity) (funcall free-fall (g-flag *player-flag*)))))
+
 (defmethod update ((player player))
-  (with-slots (collision damage-collision) player
+  (with-slots (image collision velocity damage-collision free-fall) player
+    (set-vy player)
+    (+= (y image) (vy velocity))
+    (+= (y collision) (vy velocity))
     (setf (x damage-collision) (x collision))
     (setf (y damage-collision) (y collision))))
 
