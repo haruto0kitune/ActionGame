@@ -1,7 +1,19 @@
 (in-package :game)
 
-(defclass segment ()
-  ())
+(defclass line-segment ()
+  ((a
+    :accessor a
+    :initarg :a)
+   (b
+    :accessor b
+    :initarg :b)))
+
+(defmethod translate ((line-segment line-segment) x y)
+  (with-slots (a b) line-segment
+    (+= (svref a 0) x)
+    (+= (svref a 1) y)
+    (+= (svref b 0) x)
+    (+= (svref b 1) y)))
 
 (defclass velocity ()
   ((vx

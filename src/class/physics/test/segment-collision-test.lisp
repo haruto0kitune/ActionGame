@@ -1,0 +1,43 @@
+(in-package :game)
+
+(defparameter *vx* 10)
+(defparameter *vy* 10)
+
+(defun key-event (line-segment1 line-segment2 current-key-state)
+  (with-slots (left right up down) current-key-state
+    (when (eq left t)
+      (translate line-segment1 -10 0))
+    (when (eq right t)
+      (translate line-segment1 10 0))
+    (when (eq up t)
+      (translate line-segment1 0 -10))
+    (when (eq down t)
+      (translate line-segment1 0 10))))
+
+(defun segment-collision ()
+  (sdl:with-init ()
+    (sdl:window 800 600)
+    (setf (sdl:frame-rate) 60)
+    (let ((line-segment1 (make-instance 'line-segment
+					:a (sdl:point :x 0 :y 0)
+					:b (sdl:point :x 100 :y 0)))
+	  (line-segment2 (make-instance 'line-segment
+					:a (sdl:point :x 0 :y 300)
+					:b (sdl:point :x 100 :y 300)))	    
+	  (current-key-state (make-instance 'key-state)))
+      (sdl:with-events (:poll)
+	(:quit-event () t)
+	(:key-down-event (:key key)
+			 (when (sdl:key= key :sdl-key-escape)
+			   (sdl:push-quit-event))
+			 (update-key-state key t current-key-state))
+	(:key-up-event (:key key)
+		       (update-key-state key nil current-key-state))
+	(:idle ()
+	       (sdl:clear-display sdl:*black*)
+	       (sdl:draw-line (a line-segment1) (b line-segment1) :color sdl:*white*)
+	       (sdl:draw-line (a line-segment2) (b line-segment2) :color sdl:*white*)
+	       (key-event line-segment1 line-segment2 current-key-state)
+	       (sdl:update-display))))))
+	     
+(segment-collision)
